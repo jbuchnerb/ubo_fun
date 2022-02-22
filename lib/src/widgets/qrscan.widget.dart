@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class QrWidget extends StatefulWidget {
   final Widget child;
 
-  QrWidget({@required this.child});
+  QrWidget({required this.child});
 
   @override
   _QrWidgetState createState() => _QrWidgetState();
@@ -15,7 +15,7 @@ class _QrWidgetState extends State<QrWidget> {
 
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {});
     });
   }

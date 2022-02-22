@@ -3,6 +3,8 @@ import 'package:ubo_fun/src/noticias_usuario/noticias_usuario.dart';
 import 'package:ubo_fun/src/pages/credential2.page.dart';
 import 'package:ubo_fun/src/pages/home.page.dart';
 import 'package:ubo_fun/src/pages/news.page.dart';
+import 'package:ubo_fun/src/pages/patentes.page.dart';
+import 'package:ubo_fun/src/pages/profile_image.page.dart';
 import 'package:ubo_fun/src/pages/qrscan.page.dart';
 import 'package:ubo_fun/src/pages/login.page.dart';
 import 'package:ubo_fun/src/bloc/provider.dart';
@@ -14,7 +16,6 @@ void main() async {
   final news = NoticiasUsuario();
   await prefs.initPrefs();
   await news.initPrefs();
-
 
   runApp(MyApp());
 }
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         initialRoute: _prefs.ultimaPagina,
         // initialRoute: 'login',
         routes: getRoutes(),
-        theme: getThemeData(),     
+        theme: getThemeData(),
       ),
     );
   }
@@ -61,6 +62,8 @@ class MyApp extends StatelessWidget {
       NewsPage.routeName: (BuildContext context) => NewsPage(),
       Credential2Page.routeName: (BuildContext context) => Credential2Page(),
       QrScanPage.routeName: (BuildContext context) => QrScanPage(),
+      ProfileImage.routeName: (BuildContext context) => ProfileImage(),
+      PatentesPage.routeName: (BuildContext context) => PatentesPage(),
     };
   }
 }

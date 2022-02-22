@@ -12,7 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class QrScanPage extends StatefulWidget {
   static final String routeName = 'qrscan';
-  const QrScanPage({Key key}) : super(key: key);
+  const QrScanPage({Key? key}) : super(key: key);
 
   @override
   _QrScanPageState createState() => _QrScanPageState();
@@ -26,17 +26,19 @@ class _QrScanPageState extends State<QrScanPage> {
 
   String identificacion = '';
   String nombre = '';
-  String apellidos = '';
-  int funcionario_activo = 0;
+  String? apellidos = '';
+  int? funcionario_activo = 0;
   String tipofuncionario = '';
   String cargofuncionario = '';
   String correo = '';
+  String patente1 = '';
+  String patente2 = '';
   ImageProvider imagen = Image.asset("assets/img/perfil_imagen.png").image;
-  String imagenstring ='';
-  String tipoScanner ='';
-  String scarrera='';
-  String sestadoalumno='';
-  String fechamatricula='';
+  String? imagenstring = '';
+  String tipoScanner = '';
+  String scarrera = '';
+  String sestadoalumno = '';
+  String? fechamatricula = '';
   //Uint8List _bytes;
 
   @override
@@ -54,24 +56,23 @@ class _QrScanPageState extends State<QrScanPage> {
       throw 'Could not launch $url';
     }
   }
-  
 
   Future<void> startBarcodeScanStream(String ScanType) async {
-    tipoScanner=ScanType;
+    tipoScanner = ScanType;
     FlutterBarcodeScanner.getBarcodeStreamReceiver(
-            '#ff6666', 'Cancel', true, ScanMode.BARCODE)
+            '#ff6666', 'Cancel', true, ScanMode.BARCODE)!
         .listen((barcode) => print(barcode));
   }
 
   Future<void> startQrScanStream() async {
     FlutterBarcodeScanner.getBarcodeStreamReceiver(
-            '#ff6666', 'Cancel', true, ScanMode.QR)
+            '#ff6666', 'Cancel', true, ScanMode.QR)!
         .listen((barcode) => print(barcode));
   }
 
   Future<void> scanQR(String ScanType) async {
     String barcodeScanRes;
-    tipoScanner=ScanType;
+    tipoScanner = ScanType;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
@@ -93,98 +94,105 @@ class _QrScanPageState extends State<QrScanPage> {
       tipofuncionario = '';
       cargofuncionario = '';
       correo = '';
+      patente1 = '';
+      patente2 = '';
       imagen = Image.asset("assets/img/perfil_imagen.png").image;
-      imagenstring ='';
-      tipoScanner ='';
-      scarrera='';
-      sestadoalumno='';
-      fechamatricula='';
+      imagenstring = '';
+      // tipoScanner = '';
+      scarrera = '';
+      sestadoalumno = '';
+      fechamatricula = '';
       //_scanBarcode = '165575288\$';
       //barcodeScanRes='asdasd';
-      //print(tipoScanner);
+      print(tipoScanner);
+      print('AQUI');
       switch (tipoScanner) {
         case 'QrScanFuncionarios':
-        //print('aqui');
+          print('AQUI');
           getDatosFuncionario(_scanBarcode);
           break;
         case 'QrScanAlumnos':
-        //print('alumnos');
+          //print('alumnos');
           getDatosAlumno(_scanBarcode);
           break;
       }
-      
     });
   }
 
-    Future<bool> getDatosFuncionario(identificacion) async{
-    Map<String, dynamic> decodedResp = await _qrscanprovider.getDatosFuncionario(identificacion);
-    
-    //print(decodedResp.toString());
-    if (decodedResp['ok']==false){
-        return false;
+  Future<bool> getDatosFuncionario(identificacion) async {
+    print("BUSCANDO DATOS FUNCIONARIOS");
+    Map<String, dynamic> decodedResp =
+        await _qrscanprovider.getDatosFuncionario(identificacion);
+
+    print(decodedResp.toString());
+    if (decodedResp['ok'] == false) {
+      return false;
     }
 
     setState(() {
       identificacion = decodedResp['identificacion'];
-      nombre = 'Nombre:'+decodedResp['nombre'];
-      apellidos = decodedResp['apellido_paterno']+' '+decodedResp['apellido_materno'];
+      nombre = 'Nombre:' + decodedResp['nombre'];
+      apellidos = decodedResp['apellido_paterno'] +
+          ' ' +
+          decodedResp['apellido_materno'];
       //apellido_materno = decodedResp['apellido_materno'];
       funcionario_activo = decodedResp['funcionario_activo'];
-      tipofuncionario = 'Tipo funcionario: '+decodedResp['tipoFuncionario'];
-      cargofuncionario = 'Cargo: '+decodedResp['cargoFuncionario'];
+      tipofuncionario = 'Tipo funcionario: ' + decodedResp['tipoFuncionario'];
+      cargofuncionario = 'Cargo: ' + decodedResp['cargoFuncionario'];
       imagenstring = decodedResp['imagen'];
-      correo = 'Correo: '+decodedResp['correo'];
+      correo = 'Correo: ' + decodedResp['correo'];
+      patente1 = 'Patente 1: ' + (decodedResp['patente1'] ?? 'Sin patente');
+      patente2 = 'Patente 2: ' + (decodedResp['patente2'] ?? 'Sin patente');
 
       if (imagenstring != "") {
-      Uint8List _bytes = base64.decode(imagenstring);
-      imagen = Image.memory(
-        _bytes,
-      ).image;
-    } else {
-      imagen = Image.asset("assets/img/perfil_imagen.png").image;
-    }
+        Uint8List _bytes = base64.decode(imagenstring!);
+        imagen = Image.memory(
+          _bytes,
+        ).image;
+      } else {
+        imagen = Image.asset("assets/img/perfil_imagen.png").image;
+      }
       //imagen = decodedResp['imagen'];
-      
-    //_tipoFormulario(context,tipoScanner);
+
+      //_tipoFormulario(context,tipoScanner);
     });
     return true;
   }
 
-  Future<bool> getDatosAlumno(identificacion) async{
-    Map<String, dynamic> decodedResp = await _qrscanalumnosprovider.getDatosAlumno(identificacion);
-    
+  Future<bool> getDatosAlumno(identificacion) async {
+    Map<String, dynamic> decodedResp =
+        await _qrscanalumnosprovider.getDatosAlumno(identificacion);
+
     //print(decodedResp.toString());
-    if (decodedResp['ok']==false){
-        return false;
+    if (decodedResp['ok'] == false) {
+      return false;
     }
 
     setState(() {
       identificacion = decodedResp['rut'];
-      nombre = 'Nombre:'+decodedResp['nombre'];
+      nombre = 'Nombre:' + decodedResp['nombre'];
       //apellidos = decodedResp['apellido_paterno']+' '+decodedResp['apellido_materno'];;
       //apellido_materno = decodedResp['apellido_materno'];
       //funcionario_activo = decodedResp['funcionario_activo'];
-      scarrera = 'Carrera: '+decodedResp['nombre_carrera'];
+      scarrera = 'Carrera: ' + decodedResp['nombre_carrera'];
       //cargofuncionario = 'Cargo: '+decodedResp['cargoFuncionario'];
-      sestadoalumno = 'Estado Alumno: '+decodedResp['estado'];
+      sestadoalumno = 'Estado Alumno: ' + decodedResp['estado'];
       imagenstring = decodedResp['imagen'];
       fechamatricula = decodedResp['fecha_matricula'];
       //correo = 'Correo: '+decodedResp['correo'];
 
-      
-
       if (imagenstring != null) {
-      Uint8List _bytes = base64.decode(imagenstring);
-      imagen = Image.memory(
-        _bytes,
-      ).image;
-    } else {
-      imagen = Image.asset("assets/img/perfil_imagen.png").image;
-    }
-    
+        Uint8List _bytes = base64.decode(imagenstring!);
+        imagen = Image.memory(
+          _bytes,
+        ).image;
+      } else {
+        imagen = Image.asset("assets/img/perfil_imagen.png").image;
+      }
+
       //imagen = decodedResp['imagen'];
-       //print(tipoScanner);
-     //_tipoFormulario(context,tipoScanner);
+      //print(tipoScanner);
+      //_tipoFormulario(context,tipoScanner);
     });
     return true;
   }
@@ -209,13 +217,14 @@ class _QrScanPageState extends State<QrScanPage> {
       //_scanBarcode='165575288';
     });
   }
+
   @override
   Widget build(BuildContext context) {
     ImageProvider imgperfil;
     imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
     return Scaffold(
         appBar: AppBar(
-        backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
+          backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
           actions: [
             Container(
               decoration: BoxDecoration(
@@ -233,45 +242,35 @@ class _QrScanPageState extends State<QrScanPage> {
         children: <Widget>[generateBotones(context)],
       )
       )*/
-      Container(
-      child: Table(
-      //border: TableBorder.all(),
-      columnWidths: const <int, TableColumnWidth>{
-        //0: IntrinsicColumnWidth(),
-        1: FlexColumnWidth(1.5),
-        2: FixedColumnWidth(64),
-      },
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      children: <TableRow>[
-        TableRow(
-          children: <Widget>[
-
-          Column(
-
-            children: _tipoFormulario(context,tipoScanner),
-            ),
-        ]
-        ),
-        TableRow(
-
-          children: <Widget>[
-
-          Column(
-          children: 
-          <Widget>[generateBotones(context)],
-          )
-          ]
-        ),/*
+            Container(
+                child: Table(
+          //border: TableBorder.all(),
+          columnWidths: const <int, TableColumnWidth>{
+            //0: IntrinsicColumnWidth(),
+            1: FlexColumnWidth(1.5),
+            2: FixedColumnWidth(64),
+          },
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          children: <TableRow>[
+            TableRow(children: <Widget>[
+              Column(
+                children: _tipoFormulario(context, tipoScanner),
+              ),
+            ]),
+            TableRow(children: <Widget>[
+              Column(
+                children: <Widget>[generateBotones(context)],
+              )
+            ]), /*
         TableRow(
 
           children: <Widget>[generateBotones(context)],
         ),*/
-      ],
-    ))
-      );
+          ],
+        )));
   }
-  
- /* generateScanBarcode(context){
+
+  /* generateScanBarcode(context){
     ImageProvider imgperfil;
     Size size = MediaQuery.of(context).size;
       imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
@@ -296,82 +295,78 @@ class _QrScanPageState extends State<QrScanPage> {
   }
 */
 
-
-
-  generateBotones(context){
+  generateBotones(context) {
     ImageProvider imgperfil;
     Size size = MediaQuery.of(context).size;
-      imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
+    imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
 
     return Container(
-      //width: size.width * 1,
-      height: size.height * 0.3,
-      /*decoration: BoxDecoration(
+        //width: size.width * 1,
+        height: size.height * 0.3,
+        /*decoration: BoxDecoration(
         color: Color.fromRGBO(8, 54, 130, 1.0),*/
-       // borderRadius: BorderRadius.circular(12),
+        // borderRadius: BorderRadius.circular(12),
         /*image: DecorationImage(
             image: imgperfil,
             fit: BoxFit.fill),*/
-      /*),*/
-      child: Center(
+        /*),*/
+        child: Center(
           child: Container(
-           // height: size.height * 1,
-            child: GridView.count(
-  primary: false,
-  //padding: const EdgeInsets.all(3),
-  crossAxisSpacing: 1,
-  mainAxisSpacing: 0,
-  crossAxisCount: 4, 
-  children: <Widget>[
-  
-    Container(
-      //padding: const EdgeInsets.all(8),
-      child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0), Icons.home_repair_service_sharp,
-              'Funcionarios', 'QrScanFuncionarios'),
-      color: Colors.transparent,
-    ),
-    Container(
-      //padding: const EdgeInsets.all(8),
-      child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0), Icons.cast_for_education_sharp,
-              'Alumnos', 'QrScanAlumnos'),
-      color: Colors.transparent,
-    ),
-    Container(
-      ///padding: const EdgeInsets.all(1),
-      child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0), Icons.sell,
-              'Encomienda', ''),
-      color: Colors.transparent,
-    ),
-
-    Container(
-      //padding: const EdgeInsets.all(1),
-      child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0), Icons.health_and_safety,
-              'mevacuno.cl', 'MeVacuno'),
-      color: Colors.transparent,
-      
-    ),
-  ],
-)
-                          ),
-      )
-      );
+              // height: size.height * 1,
+              child: GridView.count(
+            primary: false,
+            //padding: const EdgeInsets.all(3),
+            crossAxisSpacing: 1,
+            mainAxisSpacing: 0,
+            crossAxisCount: 4,
+            children: <Widget>[
+              Container(
+                //padding: const EdgeInsets.all(8),
+                child: _crearBotonRedondeado(
+                    Color.fromRGBO(8, 54, 130, 1.0),
+                    Icons.home_repair_service_sharp,
+                    'Funcionarios',
+                    'QrScanFuncionarios'),
+                color: Colors.transparent,
+              ),
+              Container(
+                //padding: const EdgeInsets.all(8),
+                child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
+                    Icons.cast_for_education_sharp, 'Alumnos', 'QrScanAlumnos'),
+                color: Colors.transparent,
+              ),
+              Container(
+                ///padding: const EdgeInsets.all(1),
+                child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
+                    Icons.sell, 'Encomienda', ''),
+                color: Colors.transparent,
+              ),
+              Container(
+                //padding: const EdgeInsets.all(1),
+                child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
+                    Icons.health_and_safety, 'mevacuno.cl', 'MeVacuno'),
+                color: Colors.transparent,
+              ),
+            ],
+          )),
+        ));
   }
 
-  _tipoFormulario(context,Scantype){
+  _tipoFormulario(context, Scantype) {
     switch (Scantype) {
-    //   case 'QrScanFuncionarios':
-    //     _crearFormulario(context);
-    //     break;
-    
-    case '':
-      return _formularioblanco(context);
-      break;
-    case 'QrScanAlumnos':
+      //   case 'QrScanFuncionarios':
+      //     _crearFormulario(context);
+      //     break;
+
+      case '':
+        return _formularioblanco(context);
+        break;
+      case 'QrScanAlumnos':
         return _crearFormularioAlumno(context);
-      break;
-    case 'QrScanFuncionarios':
-         return _crearFormulario(context);
-         break;
+        break;
+      case 'QrScanFuncionarios':
+        return _crearFormulario(context);
+        break;
     }
     // setState(() {
     // switch (Scantype) {
@@ -384,206 +379,229 @@ class _QrScanPageState extends State<QrScanPage> {
     //   case '':
     //     return _formularioblanco(context);
     //     break;
-    //   default:  
+    //   default:
     //     return _formularioblanco(context);
     //   };
 
     // });
   }
 
-  _formularioblanco(context){
+  _formularioblanco(context) {
     ImageProvider imgperfil;
     Size size = MediaQuery.of(context).size;
-      imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
+    imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
     return <Widget>[
-        Container(
-          height: size.height * 0.70,
-          margin: EdgeInsets.all(5),
-      //width: size.width * 1,
-      //height: size.height * 1,
-      decoration: BoxDecoration( 
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(20),
-        /*image: DecorationImage(
+      Container(
+        height: size.height * 0.70,
+        margin: EdgeInsets.all(5),
+        //width: size.width * 1,
+        //height: size.height * 1,
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          borderRadius: BorderRadius.circular(20),
+          /*image: DecorationImage(
             //image: Image.asset('${_prefs.imagenCredencial}').image,
             fit: BoxFit.fill),*/
-      ),
-      //),
-      child: Center(
-          child: Container(
-              child: Column(
-        //mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: size.height * 0.03),
-          CircleAvatar(
-            radius: size.width * 0.2,
+        ),
+        //),
+        child: Center(
+            child: Container(
+                child: Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: size.height * 0.03),
+            CircleAvatar(
+              radius: size.width * 0.2,
 
-            backgroundColor: Colors.white,
+              backgroundColor: Colors.white,
 
-            backgroundImage: imgperfil,
-            // child: Image.asset('assets/img/profile.png'),
-          ),
-          SizedBox(
-            height: size.height * 0.05,
-          ),
-          Text(
-            '',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-        ],
-       )
+              backgroundImage: imgperfil,
+              // child: Image.asset('assets/img/profile.png'),
+            ),
+            SizedBox(
+              height: size.height * 0.05,
+            ),
+            Text(
+              '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ))),
       )
-     ),
-        )];
+    ];
   }
 
-  _crearFormulario(context){//bool ScanReturn){
+  _crearFormulario(context) {
+    //bool ScanReturn){
 
     Size size = MediaQuery.of(context).size;
     //if(ScanReturn==true){w
-      return <Widget>[
-        Container(
-          height: size.height * 0.70,
-          margin: EdgeInsets.all(5),
-      //width: size.width * 1,
-      //height: size.height * 1,
-      decoration: BoxDecoration( 
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(20),
-        /*image: DecorationImage(
+    return <Widget>[
+      Container(
+        height: size.height * 0.70,
+        margin: EdgeInsets.all(5),
+        //width: size.width * 1,
+        //height: size.height * 1,
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          borderRadius: BorderRadius.circular(20),
+          /*image: DecorationImage(
             //image: Image.asset('${_prefs.imagenCredencial}').image,
             fit: BoxFit.fill),*/
-      ),
-      child: Center(
-          child: Container(
-              child: Column(
-        //mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: size.height * 0.03),
-          CircleAvatar(
-            radius: size.width * 0.2,
+        ),
+        child: Center(
+            child: Container(
+                child: Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: size.height * 0.03),
+            CircleAvatar(
+              radius: size.width * 0.2,
 
-            backgroundColor: Colors.white,
+              backgroundColor: Colors.white,
 
-            backgroundImage: imagen,
-            // child: Image.asset('assets/img/profile.png'),
-          ),
-          SizedBox(
-            height: size.height * 0.05,
-          ),
-          Text(
-            '$nombre',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '$apellidos',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '$cargofuncionario',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '$tipofuncionario',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '$correo',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-        ],
-       )
+              backgroundImage: imagen,
+              // child: Image.asset('assets/img/profile.png'),
+            ),
+            SizedBox(
+              height: size.height * 0.05,
+            ),
+            Text(
+              '$nombre',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$apellidos',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$cargofuncionario',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$tipofuncionario',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$correo',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$patente1',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$patente2',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ))),
       )
-     ),
-    )
-   ];
+    ];
   }
 
-    _crearFormularioAlumno(context,){//bool ScanReturn){
+  _crearFormularioAlumno(
+    context,
+  ) {
+    //bool ScanReturn){
 
-           /*identificacion = decodedResp['rut'];
+    /*identificacion = decodedResp['rut'];
       nombre = 'Nombre:'+decodedResp['nombre'];
       //apellidos = decodedResp['apellido_paterno']+' '+decodedResp['apellido_materno'];;
       //apellido_materno = decodedResp['apellido_materno'];
@@ -595,49 +613,49 @@ class _QrScanPageState extends State<QrScanPage> {
 
     Size size = MediaQuery.of(context).size;
     //if(ScanReturn==true){w
-      return <Widget>[
-        Container(
-          height: size.height * 0.70,
-          margin: EdgeInsets.all(5),
-      //width: size.width * 1,
-      //height: size.height * 1,
-      decoration: BoxDecoration( 
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(20),
-        /*image: DecorationImage(
+    return <Widget>[
+      Container(
+        height: size.height * 0.70,
+        margin: EdgeInsets.all(5),
+        //width: size.width * 1,
+        //height: size.height * 1,
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          borderRadius: BorderRadius.circular(20),
+          /*image: DecorationImage(
             //image: Image.asset('${_prefs.imagenCredencial}').image,
             fit: BoxFit.fill),*/
-      ),
-      child: Center(
-          child: Container(
-              child: Column(
-        //mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: size.height * 0.03),
-          CircleAvatar(
-            radius: size.width * 0.2,
+        ),
+        child: Center(
+            child: Container(
+                child: Column(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: size.height * 0.03),
+            CircleAvatar(
+              radius: size.width * 0.2,
 
-            backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
+              backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
 
-            backgroundImage: imagen,
-            // child: Image.asset('assets/img/profile.png'),
-          ),
-          SizedBox(
-            height: size.height * 0.05,
-          ),
-          Text(
-            '$nombre',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          /*Text(
+              backgroundImage: imagen,
+              // child: Image.asset('assets/img/profile.png'),
+            ),
+            SizedBox(
+              height: size.height * 0.05,
+            ),
+            Text(
+              '$nombre',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            /*Text(
             '$apellidos',
             style: Theme.of(context)
                 .textTheme
@@ -648,67 +666,66 @@ class _QrScanPageState extends State<QrScanPage> {
           SizedBox(
             height: size.height * 0.01,
           ),*/
-          Text(
-            '$scarrera',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '$sestadoalumno',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: size.height * 0.01,
-          ),
-          Text(
-            '$fechamatricula',
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
-                textAlign: TextAlign.center,
-          ),
-        ],
-       )
+            Text(
+              '$scarrera',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$sestadoalumno',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: size.height * 0.01,
+            ),
+            Text(
+              '$fechamatricula',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ))),
       )
-     ),
-    )
-   ];
+    ];
   }
-    
+
   Widget _crearBotonRedondeado(
       Color color, IconData icono, String texto, String ScanType) {
-      Size size = MediaQuery.of(context).size;
-      String enlace='https://scanmevacuno.gob.cl';
+    Size size = MediaQuery.of(context).size;
+    String enlace = 'https://scanmevacuno.gob.cl';
 
     return GestureDetector(
       onTap: () {
-        
-        if(ScanType=='QrScanFuncionarios'||ScanType=='QrScanAlumnos'){
-            scanQR(ScanType);
-          };
-        if(ScanType=='MeVacuno'){         
-            _launchInBrowser(enlace);
-            
-        /* () async { 
+        if (ScanType == 'QrScanFuncionarios' || ScanType == 'QrScanAlumnos') {
+          scanQR(ScanType);
+        }
+        ;
+        if (ScanType == 'MeVacuno') {
+          _launchInBrowser(enlace);
+
+          /* () async { 
                             
                            if (await canLaunch(enlace)) {
                               await launch(enlace, forceSafariVC: false,);
                             } else {
                               throw 'No fue posible abrir el enlace $enlace';
                             }*/
-                            //  },
-        };
+          //  },
+        }
+        ;
         /*switch(ScanType){
           case 'QrScanFuncionario': 
             startBarcodeScanStream(ScanType);
@@ -716,13 +733,13 @@ class _QrScanPageState extends State<QrScanPage> {
           case 'QrScanAlumno':
             startBarcodeScanStream(ScanType);
             break;*/
-       // }
+        // }
       },
       child: ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
           child: Container(
-           //height: 10000,
+            //height: 10000,
             margin: EdgeInsets.all(1.0),
             decoration: BoxDecoration(
                 color: Color.fromRGBO(66, 129, 237, 0.2),
@@ -734,7 +751,8 @@ class _QrScanPageState extends State<QrScanPage> {
                 CircleAvatar(
                   backgroundColor: color,
                   radius: size.width * 0.07,
-                  child: Icon(icono, color: Colors.white, size: size.width * 0.08),
+                  child:
+                      Icon(icono, color: Colors.white, size: size.width * 0.08),
                 ),
                 Text(texto,
                     textAlign: TextAlign.center,
@@ -747,7 +765,5 @@ class _QrScanPageState extends State<QrScanPage> {
         ),
       ),
     );
-      }
-    
-    
-   }
+  }
+}

@@ -9,18 +9,18 @@ class NoticiasUsuario {
 
   NoticiasUsuario._internal();
 
-  SharedPreferences _news;
+  late SharedPreferences _news;
 
   initPrefs() async {
     _news = await SharedPreferences.getInstance();
   }
 
- clear() async {
+  clear() async {
     final retorno = await _news.clear();
     return retorno;
   }
 
-  get noticias {
+  String get noticias {
     return _news.getString('noticias') ?? '[]';
   }
 

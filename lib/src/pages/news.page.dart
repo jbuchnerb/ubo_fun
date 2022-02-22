@@ -17,7 +17,7 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  List _listaNoticias;
+  List? _listaNoticias;
 
   final _prefs = new PreferenciasUsuario();
  
@@ -30,7 +30,7 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     //print(_news.noticias);
-     _listaNoticias = json.decode(_news.noticias) as List;
+     _listaNoticias = json.decode(_news.noticias) as List?;
     // print(_listaNoticias);
     updateNews();
     super.initState();
@@ -73,24 +73,24 @@ class _NewsPageState extends State<NewsPage> {
      // print(_listaNoticias);
     return ListView.builder(
       
-        itemCount: _listaNoticias.length,
+        itemCount: _listaNoticias!.length,
         itemBuilder: (BuildContext context, int index) {
 
           return generateCard(context,
-              idnoticia: _listaNoticias[index]['id'],
-              title: _listaNoticias[index]['titulo'],
-              text: _listaNoticias[index]['cuerpo'],
+              idnoticia: _listaNoticias![index]['id'],
+              title: _listaNoticias![index]['titulo'],
+              text: _listaNoticias![index]['cuerpo'],
               image: null,
-              reaccion: _listaNoticias[index]['liked'],
-              reacciones: _listaNoticias[index]['likes'],
-              read: _listaNoticias[index]['read'],
-              enlace: _listaNoticias[index]['link'],
+              reaccion: _listaNoticias![index]['liked'],
+              reacciones: _listaNoticias![index]['likes'],
+              read: _listaNoticias![index]['read'],
+              enlace: _listaNoticias![index]['link'],
               index: index
               ); 
                       });
   } 
 
-  generateCard(context, { @required idnoticia, @required title, @required text, @required image,@required reaccion,@required reacciones,@required read,@required enlace,@required index}) {
+  generateCard(context, { required idnoticia, required title, required text, required image,required reaccion,required reacciones,required read,required enlace,required index}) {
     bool breaccion=false;
     bool enabled=true;
     /*Image imagenews;
@@ -174,9 +174,9 @@ class _NewsPageState extends State<NewsPage> {
 
   Future updateNews() async {
     var result = await _newsprovider.getNoticias();
-    _listaNoticias.clear();
+    _listaNoticias!.clear();
     //print(_news.noticias);
-    _listaNoticias = json.decode(_news.noticias) as List;
+    _listaNoticias = json.decode(_news.noticias) as List?;
     setState(() {});
     return generateNews(context);
   }
@@ -184,11 +184,11 @@ class _NewsPageState extends State<NewsPage> {
   Future<bool> onLikeButtonTapped(breaccion,idnoticia,index) async{
     /*var result =*/ await _newsprovider.getReaccionar(idnoticia);
     if (breaccion==true){
-      _listaNoticias[index]['liked']=0;
-      _listaNoticias[index]['likes']-=1;
+      _listaNoticias![index]['liked']=0;
+      _listaNoticias![index]['likes']-=1;
     } else {
-      _listaNoticias[index]['liked']=1;
-      _listaNoticias[index]['likes']+=1;
+      _listaNoticias![index]['liked']=1;
+      _listaNoticias![index]['likes']+=1;
     }    
     setState(() {});
     return !breaccion;
@@ -199,7 +199,7 @@ class _NewsPageState extends State<NewsPage> {
 
   }
 
-  getEnlace(String enlace) {
+  getEnlace(String? enlace) {
     if (enlace==null){
       return Text('');
     }

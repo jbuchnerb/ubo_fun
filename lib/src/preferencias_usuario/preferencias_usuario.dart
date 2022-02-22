@@ -20,7 +20,7 @@ class PreferenciasUsuario {
 
   PreferenciasUsuario._internal();
 
-  SharedPreferences _prefs;
+  late SharedPreferences _prefs;
 
   initPrefs() async {
     this._prefs = await SharedPreferences.getInstance();
@@ -40,7 +40,7 @@ class PreferenciasUsuario {
     _prefs.setString('token', value);
   }*/
 
-  get identificacion {
+  String get identificacion {
     return this._prefs.getString('identificacion') ?? '';
   }
 
@@ -48,7 +48,7 @@ class PreferenciasUsuario {
     this._prefs.setString('identificacion', value);
   }
 
-  get nombre {
+  String get nombre {
     return this._prefs.getString('nombre') ?? '';
   }
 
@@ -56,7 +56,7 @@ class PreferenciasUsuario {
     this._prefs.setString('nombre', value);
   }
 
-  get appaterno {
+  String get appaterno {
     return this._prefs.getString('appaterno') ?? '';
   }
 
@@ -64,7 +64,7 @@ class PreferenciasUsuario {
     this._prefs.setString('appaterno', value);
   }
 
-  get apmaterno {
+  String get apmaterno {
     return this._prefs.getString('apmaterno') ?? '';
   }
 
@@ -72,7 +72,7 @@ class PreferenciasUsuario {
     this._prefs.setString('apmaterno', value);
   }
 
-  get correo {
+  String get correo {
     return this._prefs.getString('correo') ?? '';
   }
 
@@ -80,15 +80,15 @@ class PreferenciasUsuario {
     this._prefs.setString('correo', value);
   }
 
-  get funcionario_activo {
-    return this._prefs.getInt('funcionario_activo') ?? '';
+  int get funcionario_activo {
+    return this._prefs.getInt('funcionario_activo') ?? 0;
   }
 
   set funcionario_activo(int value) {
     this._prefs.setInt('funcionario_activo', value);
   }
 
-  get tipofuncionario {
+  String get tipofuncionario {
     return this._prefs.getString('tipofuncionario') ?? '';
   }
 
@@ -96,7 +96,7 @@ class PreferenciasUsuario {
     this._prefs.setString('tipofuncionario', value);
   }
 
-  get cargo {
+  String get cargo {
     return this._prefs.getString('cargo') ?? '';
   }
 
@@ -104,7 +104,7 @@ class PreferenciasUsuario {
     this._prefs.setString('cargo', value);
   }
 
-  get imagen {
+  String get imagen {
     return this._prefs.getString('imagen') ?? '';
   }
 
@@ -112,7 +112,7 @@ class PreferenciasUsuario {
     this._prefs.setString('imagen', value);
   }
 
-  get ultimaPagina {
+  String get ultimaPagina {
     return _prefs.getString('ultimaPagina') ?? 'login';
   }
 
@@ -120,7 +120,7 @@ class PreferenciasUsuario {
     _prefs.setString('ultimaPagina', value);
   }
 
-  get imagenCredencial {
+  String get imagenCredencial {
     return _prefs.getString('imagenCredencial') ?? '';
   }
 
@@ -128,7 +128,7 @@ class PreferenciasUsuario {
     _prefs.setString('imagenCredencial', value);
   }
 
-  get usuario {
+  String get usuario {
     return _prefs.getString('usuario') ?? '';
   }
 
@@ -136,7 +136,7 @@ class PreferenciasUsuario {
     _prefs.setString('usuario', value);
   }
 
-  get password {
+  String get password {
     return _prefs.getString('password') ?? '';
   }
 
@@ -144,7 +144,7 @@ class PreferenciasUsuario {
     _prefs.setString('password', value);
   }
 
-  get sessionid {
+  String get sessionid {
     return _prefs.getString('sessionid') ?? '';
   }
 
@@ -152,12 +152,11 @@ class PreferenciasUsuario {
     _prefs.setString('sessionid', value);
   }
 
-  get controlacceso {
-    return _prefs.getInt('controlacceso') ?? '';
+  int get controlacceso {
+    return _prefs.getInt('controlacceso') ?? 0;
   }
 
   set controlacceso(int value) {
     _prefs.setInt('controlacceso', value);
   }
-
 }

@@ -5,7 +5,7 @@ import 'menu.widget.dart';
 class LayoutWidget extends StatefulWidget {
   final Widget child;
 
-  LayoutWidget({@required this.child});
+  LayoutWidget({required this.child});
 
   @override
   _LayoutWidgetState createState() => _LayoutWidgetState();
@@ -15,7 +15,7 @@ class _LayoutWidgetState extends State<LayoutWidget> {
 
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {});
     });
   }

@@ -20,7 +20,7 @@ class _MenuWidgetState extends State<MenuWidget> {
 
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {});
     });
   }
@@ -73,21 +73,21 @@ class _MenuWidgetState extends State<MenuWidget> {
                     'Christian',
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText1
+                        .bodyText1!
                         .apply(color: Colors.blue[900]),
                   ),
                   Text(
                     'León',
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText1
+                        .bodyText1!
                         .apply(color: Colors.blue[900]),
                   ),
                   Text(
                     'Jefe de seguridad',
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText1
+                        .bodyText1!
                         .apply(color: Colors.blue[900]),
                   )
                 ],

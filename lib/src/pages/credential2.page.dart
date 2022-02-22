@@ -134,7 +134,7 @@ class Credential2Page extends StatelessWidget {
       ),
     );
   }
-  generateCard(context, {@required title, @required text}) {
+  generateCard(context, {required title, required text}) {
     //Size size = MediaQuery.of(context).size;
     return Card(
       shape: RoundedRectangleBorder(

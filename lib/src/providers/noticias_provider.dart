@@ -17,13 +17,12 @@ class NoticiasProvider {
     };
 
     final resp = await http.post(
-        'http://funcionarios.ubo.cl/api/noticia',
+        Uri.parse('http://funcionarios.ubo.cl/api/noticia'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
-
 
     if (decodedResp.containsKey('status')) {
       if (decodedResp['status'] == 404) {
@@ -41,8 +40,8 @@ class NoticiasProvider {
       }
 
       //_prefs.token = decodedResp['idToken'];
-    } 
-      return {'ok': false, 'mensaje': 'retorno inválido'};
+    }
+    return {'ok': false, 'mensaje': 'retorno inválido'};
   }
 
   Future<Map<String, dynamic>> getReaccionar(int idnoticia) async {
@@ -54,7 +53,7 @@ class NoticiasProvider {
     };
 
     final resp = await http.post(
-        'http://funcionarios.ubo.cl/api/noticias/reaccion',
+        Uri.parse('http://funcionarios.ubo.cl/api/noticias/reaccion'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));
@@ -71,18 +70,18 @@ class NoticiasProvider {
         return {'ok': true, 'mensaje': decodedResp['mensaje']};
       }
       //_prefs.token = decodedResp['idToken'];
-    } 
-      return {'ok': false, 'mensaje': 'retorno inválido'};
+    }
+    return {'ok': false, 'mensaje': 'retorno inválido'};
   }
 
-  Future<Map<String, dynamic>> getLectura(int idnoticia) async {
+  Future<Map<String, dynamic>> getLectura(int? idnoticia) async {
     final authData = {
       'identificacion': _prefs.identificacion,
       'idnoticia': idnoticia,
     };
 
     final resp = await http.post(
-        'http://funcionarios.ubo.cl/api/noticia/read',
+        Uri.parse('http://funcionarios.ubo.cl/api/noticia/read'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));
@@ -101,6 +100,6 @@ class NoticiasProvider {
 
       //_prefs.token = decodedResp['idToken'];
     }
-      return {'ok': false, 'mensaje': 'retorno inválido'};
+    return {'ok': false, 'mensaje': 'retorno inválido'};
   }
 }

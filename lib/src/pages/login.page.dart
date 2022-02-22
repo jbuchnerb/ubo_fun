@@ -88,7 +88,7 @@ class LoginPage extends StatelessWidget {
                 hintText: '',
                 labelText: 'Usuario funcionario UBO',
                 counterText: snapshot.data,
-                errorText: snapshot.error),
+                errorText: snapshot.error as String?),
             onChanged: bloc.changeEmail,
           ),
         );
@@ -108,7 +108,7 @@ class LoginPage extends StatelessWidget {
                 icon: Icon(Icons.lock_outline, color: Colors.deepPurple),
                 labelText: 'Contraseña',
                 counterText: snapshot.data,
-                errorText: snapshot.error),
+                errorText: snapshot.error as String?),
             onChanged: bloc.changePassword,
           ),
         );

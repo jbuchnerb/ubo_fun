@@ -22,10 +22,10 @@ class UsuarioProvider {
     };
 
     final resp = await http.post(
-        'http://funcionarios.ubo.cl/api/login',
+        Uri.parse('http://funcionarios.ubo.cl/api/login'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
-    //print(json.encode(authData));
+    print(resp.body);
     Map<String, dynamic> decodedResp = json.decode(resp.body);
 
     //print(decodedResp);
@@ -43,17 +43,16 @@ class UsuarioProvider {
         //_prefs.carrera = decodedResp['body']['carrera'];
         //_prefs.facultad = decodedResp['body']['facultad'];
         //_prefs.codfacultad = decodedResp['body']['cod_facultad'];
-        _prefs.correo = decodedResp['cod_facultad'];
+        _prefs.correo = decodedResp['correo'];
         _prefs.imagen = decodedResp['imagen'];
         _prefs.usuario = email;
-        _prefs.sessionid = decodedResp['session_id'];
+        // _prefs.sessionid = decodedResp['session_id'];
         //_prefs.grado = decodedResp['body']['grado'];
         //_prefs.password = decodedResp['body']['password'];
         _prefs.funcionario_activo = decodedResp['funcionario_activo'];
         _prefs.controlacceso = decodedResp['control_acceso'];
         _prefs.cargo = decodedResp['cargoFuncionario'];
         _prefs.tipofuncionario = decodedResp['tipoFuncionario'];
-
 
         /*switch (_prefs.codfacultad) {
           case 'ING':
@@ -97,7 +96,7 @@ class UsuarioProvider {
             break;
         }*/
 
-       /* if (_prefs.codfacultad == 'ING') {
+        /* if (_prefs.codfacultad == 'ING') {
           _prefs.imagenCredencial = 'assets/img/credencial/fingenieria.jpg';
         }*/
 
@@ -107,5 +106,53 @@ class UsuarioProvider {
       //_prefs.token = decodedResp['idToken'];
     }
     return {'ok': false, 'mensaje': 'retorno inválido'};
+  }
+
+  uploadImage(String path) async {
+    var request = http.MultipartRequest(
+        "POST", Uri.parse('http://funcionarios.ubo.cl/api/cambiar_imagen'));
+    request.fields['identificacion'] = _prefs.identificacion;
+    request.files.add(await http.MultipartFile.fromPath("imagen", path));
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+    // print(response.body);
+  }
+
+  getPatentes() async {
+    // Uri.http(authority, unencodedPath)
+    final resp = await http.get(
+      Uri.parse('http://funcionarios.ubo.cl/api/funcionario/patentes')
+          .replace(queryParameters: {"identificacion": _prefs.identificacion}),
+      headers: {'Content-Type': 'application/json;charset=UTF-8'},
+    );
+
+    Map<String, dynamic> decodedResp = json.decode(resp.body);
+
+    return decodedResp;
+  }
+
+  setPatentes(patente1, patente2) async {
+    // Uri.http(authority, unencodedPath)
+    final resp = await http.get(
+      Uri.parse('http://funcionarios.ubo.cl/api/funcionario/patentes/insert')
+          .replace(queryParameters: {
+        "identificacion": _prefs.identificacion,
+        "patente1": patente1,
+        "patente2": patente2
+      }),
+      headers: {'Content-Type': 'application/json;charset=UTF-8'},
+    );
+    print(resp.body);
+    if (resp.statusCode != 200) {
+      return false;
+    }
+    Map<String, dynamic> decodedResp = json.decode(resp.body);
+
+    return true;
   }
 }
