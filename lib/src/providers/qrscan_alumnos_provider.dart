@@ -17,7 +17,12 @@ class QrscanAlumnosProvider {
     //print(json.encode(authData));
 
     // Map<String, dynamic> decodedResp = json.decode(resp.body);
-    Map<String, dynamic> decodedResp = json.decode(resp.body);
+    Map<String, dynamic> decodedResp;
+    try {
+      decodedResp = json.decode(resp.body);
+    } catch (Exception) {
+      return {'ok': false, 'mensaje': "Usuario no encontrado"};
+    }
 
     //print(decodedResp);
 

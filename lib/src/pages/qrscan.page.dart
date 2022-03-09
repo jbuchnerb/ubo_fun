@@ -141,6 +141,24 @@ class _QrScanPageState extends State<QrScanPage> {
       print(decodedResp);
       Navigator.of(context).pop();
 
+      AlertDialog dialog = AlertDialog(
+        title: Text("Funcionario no encontrado"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"))
+        ],
+      );
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return dialog;
+        },
+      );
+
       return false;
     }
 
@@ -192,6 +210,24 @@ class _QrScanPageState extends State<QrScanPage> {
     //print(decodedResp.toString());
     if (decodedResp['ok'] == false) {
       Navigator.of(context).pop();
+
+      AlertDialog dialog = AlertDialog(
+        title: Text("Alumno no encontrado"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"))
+        ],
+      );
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return dialog;
+        },
+      );
       return false;
     }
 
