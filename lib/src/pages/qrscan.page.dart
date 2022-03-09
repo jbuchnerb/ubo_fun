@@ -106,6 +106,7 @@ class _QrScanPageState extends State<QrScanPage> {
       //barcodeScanRes='asdasd';
       print(tipoScanner);
       print('AQUI');
+
       switch (tipoScanner) {
         case 'QrScanFuncionarios':
           print('AQUI');
@@ -121,11 +122,25 @@ class _QrScanPageState extends State<QrScanPage> {
 
   Future<bool> getDatosFuncionario(identificacion) async {
     print("BUSCANDO DATOS FUNCIONARIOS");
+
+    AlertDialog dialog = AlertDialog(
+      title: Text("Buscando..."),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return dialog;
+      },
+    );
     Map<String, dynamic> decodedResp =
         await _qrscanprovider.getDatosFuncionario(identificacion);
 
     print(decodedResp.toString());
     if (decodedResp['ok'] == false) {
+      print(decodedResp);
+      Navigator.of(context).pop();
+
       return false;
     }
 
@@ -156,15 +171,27 @@ class _QrScanPageState extends State<QrScanPage> {
 
       //_tipoFormulario(context,tipoScanner);
     });
+    Navigator.of(context).pop();
     return true;
   }
 
   Future<bool> getDatosAlumno(identificacion) async {
+    AlertDialog dialog = AlertDialog(
+      title: Text("Buscando..."),
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return dialog;
+      },
+    );
     Map<String, dynamic> decodedResp =
         await _qrscanalumnosprovider.getDatosAlumno(identificacion);
 
     //print(decodedResp.toString());
     if (decodedResp['ok'] == false) {
+      Navigator.of(context).pop();
       return false;
     }
 
@@ -194,6 +221,8 @@ class _QrScanPageState extends State<QrScanPage> {
       //print(tipoScanner);
       //_tipoFormulario(context,tipoScanner);
     });
+
+    Navigator.of(context).pop();
     return true;
   }
 

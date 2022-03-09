@@ -18,7 +18,7 @@ class QrscanProvider {
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
 
-    //print(decodedResp['nombre']);
+    print(decodedResp);
 
     if (decodedResp.containsKey('status')) {
       if (decodedResp['status'] == 404) {
