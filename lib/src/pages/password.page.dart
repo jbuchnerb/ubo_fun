@@ -148,6 +148,45 @@ class _PasswordPageState extends State<PasswordPage> {
 
   grabarPatentes() async {
     AlertDialog dialog;
+    if (_claveActual.text == '') {
+      dialog = AlertDialog(
+        title: Text("Error"),
+        content: Text("Complete los campos"),
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return dialog;
+        },
+      );
+      return;
+    }
+    if (_nuevaClave.text == '') {
+      dialog = AlertDialog(
+        title: Text("Error"),
+        content: Text("Complete los campos"),
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return dialog;
+        },
+      );
+      return;
+    }
+    if (_nuevaClave2.text == '') {
+      dialog = AlertDialog(
+        title: Text("Error"),
+        content: Text("Complete los campos"),
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return dialog;
+        },
+      );
+      return;
+    }
     if (_nuevaClave.text != _nuevaClave2.text) {
       dialog = AlertDialog(
         title: Text("Error"),
@@ -189,6 +228,19 @@ class _PasswordPageState extends State<PasswordPage> {
         },
       );
     }
+    dialog = AlertDialog(
+      title: Text("Operacion realizada exitosamente"),
+      // content: Text(""),
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return dialog;
+      },
+    );
+    _claveActual.text = '';
+    _nuevaClave.text = '';
+    _nuevaClave2.text = '';
     print(grabar);
   }
 }
