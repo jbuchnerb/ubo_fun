@@ -3,6 +3,7 @@ import 'package:ubo_fun/src/noticias_usuario/noticias_usuario.dart';
 import 'package:ubo_fun/src/pages/credential2.page.dart';
 import 'package:ubo_fun/src/pages/home.page.dart';
 import 'package:ubo_fun/src/pages/news.page.dart';
+import 'package:ubo_fun/src/pages/password.page.dart';
 import 'package:ubo_fun/src/pages/patentes.page.dart';
 import 'package:ubo_fun/src/pages/profile_image.page.dart';
 import 'package:ubo_fun/src/pages/qrscan.page.dart';
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
       QrScanPage.routeName: (BuildContext context) => QrScanPage(),
       ProfileImage.routeName: (BuildContext context) => ProfileImage(),
       PatentesPage.routeName: (BuildContext context) => PatentesPage(),
+      PasswordPage.routeName: (BuildContext context) => PasswordPage(),
     };
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:ubo_fun/src/pages/login.page.dart';
 import 'package:ubo_fun/src/pages/news.page.dart';
+import 'package:ubo_fun/src/pages/password.page.dart';
 import 'package:ubo_fun/src/pages/patentes.page.dart';
 import 'package:ubo_fun/src/pages/profile_image.page.dart';
 import 'package:ubo_fun/src/pages/qrscan.page.dart';
@@ -106,6 +107,12 @@ class _HomePageState extends State<HomePage> {
                     'Patentes',
                     PatentesPage.routeName,
                     context),
+                color: Colors.transparent,
+              ),
+              Container(
+                padding: const EdgeInsets.all(3),
+                child: _crearBotonRedondeado(bluecolor, Icons.security,
+                    'Cambiar Contaseña', PasswordPage.routeName, context),
                 color: Colors.transparent,
               ),
               if (_prefs.controlacceso == 1)

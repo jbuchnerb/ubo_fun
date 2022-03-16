@@ -155,4 +155,25 @@ class UsuarioProvider {
 
     return true;
   }
+
+  chagenPassword(clave_actual, clave_nueva, clave_nueva_conf) async {
+    // Uri.http(authority, unencodedPath)
+    final resp = await http.post(
+      Uri.parse('http://funcionarios.ubo.cl/api/cambiar_contrasena'),
+      body: json.encode({
+        "identificacion": _prefs.identificacion,
+        "clave_actual": clave_actual,
+        "clave_nueva": clave_nueva,
+        "clave_nueva_conf": clave_nueva_conf,
+      }),
+      headers: {'Content-Type': 'application/json;charset=UTF-8'},
+    );
+    print(resp.body);
+    if (resp.statusCode != 200) {
+      return false;
+    }
+    Map<String, dynamic> decodedResp = json.decode(resp.body);
+
+    return true;
+  }
 }

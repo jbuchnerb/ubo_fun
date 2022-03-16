@@ -39,6 +39,7 @@ class _QrScanPageState extends State<QrScanPage> {
   String scarrera = '';
   String sestadoalumno = '';
   String? fechamatricula = '';
+  String? imagenCredencial = '';
   //Uint8List _bytes;
 
   @override
@@ -100,6 +101,7 @@ class _QrScanPageState extends State<QrScanPage> {
       imagenstring = '';
       // tipoScanner = '';
       scarrera = '';
+      imagenCredencial = '';
       sestadoalumno = '';
       fechamatricula = '';
       //_scanBarcode = '165575288\$';
@@ -140,6 +142,7 @@ class _QrScanPageState extends State<QrScanPage> {
     if (decodedResp['ok'] == false) {
       print(decodedResp);
       Navigator.of(context).pop();
+      // _formularioblanco(context);
 
       AlertDialog dialog = AlertDialog(
         title: Text("Funcionario no encontrado"),
@@ -207,7 +210,6 @@ class _QrScanPageState extends State<QrScanPage> {
     Map<String, dynamic> decodedResp =
         await _qrscanalumnosprovider.getDatosAlumno(identificacion);
 
-    //print(decodedResp.toString());
     if (decodedResp['ok'] == false) {
       Navigator.of(context).pop();
 
@@ -233,6 +235,10 @@ class _QrScanPageState extends State<QrScanPage> {
 
     setState(() {
       identificacion = decodedResp['rut'];
+
+      final facultad = decodedResp['cod_facultad'];
+      this.imagenCredencial = _imagenCredencial(facultad);
+      print(imagenCredencial);
       nombre = 'Nombre:' + decodedResp['nombre'];
       //apellidos = decodedResp['apellido_paterno']+' '+decodedResp['apellido_materno'];;
       //apellido_materno = decodedResp['apellido_materno'];
@@ -550,6 +556,13 @@ class _QrScanPageState extends State<QrScanPage> {
 
     Size size = MediaQuery.of(context).size;
     //if(ScanReturn==true){w
+    DecorationImage? decorador;
+    if (nombre != '') {
+      decorador = DecorationImage(
+          image: Image.asset('assets/img/credencial/crede1.png').image,
+          fit: BoxFit.fill);
+    }
+    // assets/img/credencial/crede1.png
     return <Widget>[
       Container(
         height: size.height * 0.70,
@@ -557,12 +570,9 @@ class _QrScanPageState extends State<QrScanPage> {
         //width: size.width * 1,
         //height: size.height * 1,
         decoration: BoxDecoration(
-          color: Colors.white10,
-          borderRadius: BorderRadius.circular(20),
-          /*image: DecorationImage(
-            //image: Image.asset('${_prefs.imagenCredencial}').image,
-            fit: BoxFit.fill),*/
-        ),
+            color: Colors.white10,
+            borderRadius: BorderRadius.circular(20),
+            image: decorador),
         child: Center(
             child: Container(
                 child: Column(
@@ -678,6 +688,12 @@ class _QrScanPageState extends State<QrScanPage> {
 
     Size size = MediaQuery.of(context).size;
     //if(ScanReturn==true){w
+    DecorationImage? decorador;
+    if (this.imagenCredencial != '') {
+      decorador = DecorationImage(
+          image: Image.asset('${this.imagenCredencial}').image,
+          fit: BoxFit.fill);
+    }
     return <Widget>[
       Container(
         height: size.height * 0.70,
@@ -687,9 +703,7 @@ class _QrScanPageState extends State<QrScanPage> {
         decoration: BoxDecoration(
           color: Colors.white10,
           borderRadius: BorderRadius.circular(20),
-          /*image: DecorationImage(
-            //image: Image.asset('${_prefs.imagenCredencial}').image,
-            fit: BoxFit.fill),*/
+          image: decorador,
         ),
         child: Center(
             child: Container(
@@ -697,11 +711,12 @@ class _QrScanPageState extends State<QrScanPage> {
           //mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: size.height * 0.03),
+            SizedBox(height: size.height * 0.10),
             CircleAvatar(
               radius: size.width * 0.2,
 
-              backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
+              backgroundColor: Colors.white,
+              // backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
 
               backgroundImage: imagen,
               // child: Image.asset('assets/img/profile.png'),
@@ -714,7 +729,8 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: Colors.white),
+              // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -736,7 +752,8 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: Colors.white),
+              // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -747,7 +764,8 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: Colors.white),
+              // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -758,7 +776,8 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: Colors.white),
+              // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -830,5 +849,52 @@ class _QrScanPageState extends State<QrScanPage> {
         ),
       ),
     );
+  }
+
+  _imagenCredencial(facultad) {
+    String imagen = '';
+    switch (facultad) {
+      case 'ING':
+        {
+          imagen = 'assets/img/credencial/fingenieria.jpg';
+        }
+        break;
+
+      case 'HUM':
+        {
+          imagen = 'assets/img/credencial/feducacion.jpg';
+        }
+        break;
+
+      case 'SDR':
+        {
+          imagen = 'assets/img/credencial/fsalud.jpg';
+        }
+        //statements;
+        break;
+
+      case 'CJ':
+        {
+          imagen = 'assets/img/credencial/fsociales.jpg';
+        }
+        //statements;
+        break;
+
+      case 'CM':
+        {
+          imagen = 'assets/img/credencial/fmedicas.jpg';
+        }
+        //statements;
+        break;
+
+      case 'POST':
+        {
+          imagen = 'assets/img/credencial/fpostgrados.jpg';
+        }
+        //statements;
+        break;
+    }
+
+    return imagen;
   }
 }
