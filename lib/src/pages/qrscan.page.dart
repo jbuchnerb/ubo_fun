@@ -175,8 +175,8 @@ class _QrScanPageState extends State<QrScanPage> {
       funcionario_activo = decodedResp['funcionario_activo'];
       tipofuncionario = 'Tipo funcionario: ' + decodedResp['tipoFuncionario'];
       cargofuncionario = 'Cargo: ' + decodedResp['cargoFuncionario'];
-      imagenstring = decodedResp['imagen'];
-      correo = 'Correo: ' + decodedResp['correo'];
+      imagenstring = decodedResp['imagen'] ?? '';
+      correo = 'Correo: ' + (decodedResp['correo'] ?? '');
       patente1 = 'Patente 1: ' + (decodedResp['patente1'] ?? 'Sin patente');
       patente2 = 'Patente 2: ' + (decodedResp['patente2'] ?? 'Sin patente');
 
@@ -875,7 +875,7 @@ class _QrScanPageState extends State<QrScanPage> {
 
       case 'CJ':
         {
-          imagen = 'assets/img/credencial/fsociales.jpg';
+          imagen = 'assets/img/credencial/fsociales.png';
         }
         //statements;
         break;

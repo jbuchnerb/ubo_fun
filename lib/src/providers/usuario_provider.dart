@@ -25,34 +25,47 @@ class UsuarioProvider {
         Uri.parse('http://funcionarios.ubo.cl/api/login'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
-    print(resp.body);
-    Map<String, dynamic> decodedResp = json.decode(resp.body);
+    // print(resp.body);
+    // print(resp.statusCode);
+    Map<String, dynamic> decodedResp;
+    try {
+      decodedResp = json.decode(resp.body);
+    } catch (e) {
+      return {
+        'ok': false,
+        'mensaje': 'Ha ocurrido un error mientras se intentaba iniciar sesión'
+      };
+    }
 
-    //print(decodedResp);
+    // print(decodedResp['status'] == '404');
+    // print(decodedResp);
+    print("aquí!");
+    print(decodedResp);
 
     if (decodedResp.containsKey('status')) {
-      if (decodedResp['status'] == 404) {
-        return {'ok': false, 'mensaje': decodedResp['mensaje']};
+      if (decodedResp['status'] != 200) {
+        return {'ok': false, 'mensaje': decodedResp['message']};
       }
 
       if (decodedResp['status'] == 200) {
-        _prefs.nombre = decodedResp['nombre'];
-        _prefs.identificacion = decodedResp['identificacion'];
-        _prefs.appaterno = decodedResp['apellido_paterno'];
-        _prefs.apmaterno = decodedResp['apellido_materno'];
+        _prefs.nombre = decodedResp['nombre'] ?? '';
+        _prefs.identificacion = decodedResp['identificacion'] ?? '';
+        _prefs.appaterno = decodedResp['apellido_paterno'] ?? '';
+        _prefs.apmaterno = decodedResp['apellido_materno'] ?? '';
         //_prefs.carrera = decodedResp['body']['carrera'];
         //_prefs.facultad = decodedResp['body']['facultad'];
         //_prefs.codfacultad = decodedResp['body']['cod_facultad'];
-        _prefs.correo = decodedResp['correo'];
-        _prefs.imagen = decodedResp['imagen'];
+        _prefs.correo = decodedResp['correo'] ?? '';
+        _prefs.imagen = decodedResp['imagen'] ?? '';
         _prefs.usuario = email;
         // _prefs.sessionid = decodedResp['session_id'];
         //_prefs.grado = decodedResp['body']['grado'];
         //_prefs.password = decodedResp['body']['password'];
-        _prefs.funcionario_activo = decodedResp['funcionario_activo'];
-        _prefs.controlacceso = decodedResp['control_acceso'];
-        _prefs.cargo = decodedResp['cargoFuncionario'];
-        _prefs.tipofuncionario = decodedResp['tipoFuncionario'];
+        _prefs.funcionario_activo = decodedResp['funcionario_activo'] ?? 0;
+        _prefs.controlacceso = decodedResp['control_acceso'] ?? '';
+        _prefs.cargo = decodedResp['cargoFuncionario'] ?? '';
+        _prefs.tipofuncionario = decodedResp['tipoFuncionario'] ?? '';
+        _prefs.idusuario = decodedResp['idusuario'] ?? '';
 
         /*switch (_prefs.codfacultad) {
           case 'ING':
@@ -100,7 +113,7 @@ class UsuarioProvider {
           _prefs.imagenCredencial = 'assets/img/credencial/fingenieria.jpg';
         }*/
 
-        return {'ok': true, 'mensaje': decodedResp['mensaje']};
+        return {'ok': true, 'mensaje': decodedResp['message']};
       }
 
       //_prefs.token = decodedResp['idToken'];

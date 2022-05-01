@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 
 class QrscanProvider {
   final String _apiToken = 'XxjbA2i2ksU4byJg00Dvc1XUhqqlBX+Jk48kijKEOK0=';
 
   Future<Map<String, dynamic>> getDatosFuncionario(identificacion) async {
+    final _prefs = new PreferenciasUsuario();
     final authData = {
       //'token': _apiToken,
       'identificacion': identificacion,
+      'idusuario': _prefs.idusuario,
     };
 
     final resp = await http.post(

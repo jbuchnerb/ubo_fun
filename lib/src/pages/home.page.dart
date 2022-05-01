@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget build(BuildContext context) {
     //Size size = MediaQuery.of(context).size;
+    print(_prefs.idusuario);
     ImageProvider imgperfil;
     _prefs.ultimaPagina = HomePage.routeName;
     imgperfil = Image.asset("assets/img/perfil_imagen.png").image;

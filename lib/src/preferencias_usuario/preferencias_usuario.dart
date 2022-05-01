@@ -159,4 +159,12 @@ class PreferenciasUsuario {
   set controlacceso(int value) {
     _prefs.setInt('controlacceso', value);
   }
+
+  int get idusuario {
+    return _prefs.getInt('idusuario') ?? 0;
+  }
+
+  set idusuario(int value) {
+    _prefs.setInt('idusuario', value);
+  }
 }

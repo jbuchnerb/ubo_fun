@@ -12,6 +12,7 @@ class NoticiasProvider {
   final _prefs = new PreferenciasUsuario();
 
   Future<Map<String, dynamic>> getNoticias() async {
+    print(_prefs.identificacion);
     final authData = {
       'identificacion': _prefs.identificacion,
     };
@@ -20,8 +21,12 @@ class NoticiasProvider {
         Uri.parse('http://funcionarios.ubo.cl/api/noticia'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
-    //print(json.encode(authData));
-
+    print(resp.body);
+    print(authData);
+    print(resp);
+    if (resp.statusCode != 200) {
+      return {'ok': false, 'mensaje': "error al procesar la solicitud"};
+    }
     Map<String, dynamic> decodedResp = json.decode(resp.body);
 
     if (decodedResp.containsKey('status')) {

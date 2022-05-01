@@ -126,18 +126,16 @@ class LoginPage extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         return ElevatedButton(
           child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
-              child: Text('Ingresar'),
-              //color: Colors.deepPurple,
-              
-            ),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple)
+            padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
+            child: Text('Ingresar'),
+            //color: Colors.deepPurple,
           ),
+          style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.deepPurple)),
           onPressed: snapshot.hasData ? () => _login(bloc, context) : null,
- 
         );
-         /*  RaisedButton(
+        /*  RaisedButton(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 80.0, vertical: 15.0),
               child: Text('Ingresar'),
@@ -153,9 +151,12 @@ class LoginPage extends StatelessWidget {
   }
 
   _login(LoginBloc bloc, BuildContext context) async {
+    FocusManager.instance.primaryFocus?.unfocus();
     Map info = await usuarioProvider.login(bloc.email, bloc.password);
-
-    if (info['ok']==true) {
+    print(info);
+    print("here");
+    // return;
+    if (info['ok'] == true) {
       bloc.email = '';
       bloc.password = '';
       Navigator.pushReplacementNamed(context, 'home');

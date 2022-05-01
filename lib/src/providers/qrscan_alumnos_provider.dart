@@ -1,17 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 
 class QrscanAlumnosProvider {
   final String _apiToken = 'XxjbA2i2ksU4byJg00Dvc1XUhqqlBX+Jk48kijKEOK0=';
 
   Future<Map<String, dynamic>> getDatosAlumno(identificacion) async {
+    final _prefs = new PreferenciasUsuario();
     final authData = {
       'rut': identificacion,
+      'idusuario': _prefs.idusuario,
       'token': _apiToken,
     };
 
     final resp = await http.post(
-        Uri.parse('http://app.ubo.cl/api/consulta_datos'),
+        Uri.parse('http://funcionarios.ubo.cl/api/getDatosAlumno'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));
