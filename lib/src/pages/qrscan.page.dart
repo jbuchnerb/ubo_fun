@@ -106,12 +106,9 @@ class _QrScanPageState extends State<QrScanPage> {
       fechamatricula = '';
       //_scanBarcode = '165575288\$';
       //barcodeScanRes='asdasd';
-      print(tipoScanner);
-      print('AQUI');
 
       switch (tipoScanner) {
         case 'QrScanFuncionarios':
-          print('AQUI');
           getDatosFuncionario(_scanBarcode);
           break;
         case 'QrScanAlumnos':
@@ -123,8 +120,6 @@ class _QrScanPageState extends State<QrScanPage> {
   }
 
   Future<bool> getDatosFuncionario(identificacion) async {
-    print("BUSCANDO DATOS FUNCIONARIOS");
-
     AlertDialog dialog = AlertDialog(
       title: Text("Buscando..."),
     );
@@ -138,9 +133,7 @@ class _QrScanPageState extends State<QrScanPage> {
     Map<String, dynamic> decodedResp =
         await _qrscanprovider.getDatosFuncionario(identificacion);
 
-    print(decodedResp.toString());
     if (decodedResp['ok'] == false) {
-      print(decodedResp);
       Navigator.of(context).pop();
       // _formularioblanco(context);
 
@@ -238,7 +231,7 @@ class _QrScanPageState extends State<QrScanPage> {
 
       final facultad = decodedResp['cod_facultad'];
       this.imagenCredencial = _imagenCredencial(facultad);
-      print(imagenCredencial);
+
       nombre = 'Nombre:' + decodedResp['nombre'];
       //apellidos = decodedResp['apellido_paterno']+' '+decodedResp['apellido_materno'];;
       //apellido_materno = decodedResp['apellido_materno'];

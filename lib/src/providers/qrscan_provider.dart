@@ -17,11 +17,11 @@ class QrscanProvider {
         Uri.parse('http://funcionarios.ubo.cl/api/getDatosFuncionario'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
-    print(json.encode(authData));
+    //print(json.encode(authData));
 
     Map<String, dynamic> decodedResp = json.decode(resp.body);
 
-    print(decodedResp);
+    //print(decodedResp);
 
     if (decodedResp.containsKey('status')) {
       if (decodedResp['status'] == 404) {

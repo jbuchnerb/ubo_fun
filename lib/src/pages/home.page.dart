@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget build(BuildContext context) {
     //Size size = MediaQuery.of(context).size;
-    print(_prefs.idusuario);
+    //print(_prefs.idusuario);
     ImageProvider imgperfil;
     _prefs.ultimaPagina = HomePage.routeName;
     imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                   height: size.height * 0.05,
                 ),
                 Container(
-                    width: size.width * 0.40,
+                    width: size.width * 0.48,
                     height: size.height * 0.13,
                     decoration: new BoxDecoration(
                         //shape: BoxShape.circle,
@@ -191,12 +191,11 @@ class _HomePageState extends State<HomePage> {
                 ),
                 InkWell(
                   onTap: () {
-                    print("here");
                     Navigator.pushNamed(context, ProfileImage.routeName)
                         .then((value) => setState(() {}));
                   },
                   child: CircularPercentIndicator(
-                    radius: 90.0,
+                    radius: size.height * 0.1,
                     lineWidth: 5.0,
                     animation: true,
                     percent: 0.75,
@@ -205,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                     backgroundColor: Colors.red,
                     center: CircleAvatar(
                         backgroundColor: Colors.amber,
-                        radius: 35.0,
+                        radius: size.height * 0.09,
                         backgroundImage: imgperfil),
                   ),
                 ),

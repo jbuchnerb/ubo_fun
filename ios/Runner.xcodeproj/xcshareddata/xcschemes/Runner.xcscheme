@@ -82,6 +82,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "ubo-fun"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
