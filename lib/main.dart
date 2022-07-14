@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return Provider(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Material App',
+        title: 'Funcionarios UBO',
         initialRoute: _prefs.ultimaPagina,
         // initialRoute: 'login',
         routes: getRoutes(),

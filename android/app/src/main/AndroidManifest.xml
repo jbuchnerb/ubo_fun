@@ -19,7 +19,7 @@
     </queries>
     <application
         android:name="${applicationName}"
-        android:label="UBO"
+        android:label="Funcionarios UBO"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
