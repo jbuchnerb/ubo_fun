@@ -399,12 +399,12 @@ class _QrScanPageState extends State<QrScanPage> {
                     Icons.cast_for_education_sharp, 'Alumnos', 'QrScanAlumnos'),
                 color: Colors.transparent,
               ),
-              Container(
+             /* Container(
                 ///padding: const EdgeInsets.all(1),
                 child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
                     Icons.sell, 'Encomienda', ''),
                 color: Colors.transparent,
-              ),
+              ),*/
               Container(
                 //padding: const EdgeInsets.all(1),
                 child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
