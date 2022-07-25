@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
               Container(
                 padding: const EdgeInsets.all(3),
                 child: _crearBotonRedondeado(bluecolor, Icons.security,
-                    'Cambiar Contaseña', PasswordPage.routeName, context),
+                    'Cambiar Contraseña', PasswordPage.routeName, context),
                 color: Colors.transparent,
               ),
               if (_prefs.controlacceso == 1)
