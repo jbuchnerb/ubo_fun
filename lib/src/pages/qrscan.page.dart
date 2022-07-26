@@ -382,7 +382,7 @@ class _QrScanPageState extends State<QrScanPage> {
             //padding: const EdgeInsets.all(3),
             crossAxisSpacing: 1,
             mainAxisSpacing: 0,
-            crossAxisCount: 4,
+            crossAxisCount: 3,
             children: <Widget>[
               Container(
                 //padding: const EdgeInsets.all(8),
@@ -827,7 +827,7 @@ class _QrScanPageState extends State<QrScanPage> {
                 //SizedBox(height: 5.0),
                 CircleAvatar(
                   backgroundColor: color,
-                  radius: size.width * 0.07,
+                  radius: size.width * 0.09,
                   child:
                       Icon(icono, color: Colors.white, size: size.width * 0.08),
                 ),
