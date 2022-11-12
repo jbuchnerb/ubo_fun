@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
+import 'package:ubo_fun/assets/Constants.dart';
 
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:http/http.dart' as http;
@@ -21,8 +22,7 @@ class UsuarioProvider {
       //'token': _apiToken,
     };
 
-    final resp = await http.post(
-        Uri.parse('http://funcionarios.ubo.cl/api/login'),
+    final resp = await http.post(Uri.parse('${Constants.API_URL}api/login'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     // print(resp.body);
@@ -123,7 +123,7 @@ class UsuarioProvider {
 
   uploadImage(String path) async {
     var request = http.MultipartRequest(
-        "POST", Uri.parse('http://funcionarios.ubo.cl/api/cambiar_imagen'));
+        "POST", Uri.parse('${Constants.API_URL}api/cambiar_imagen'));
     request.fields['identificacion'] = _prefs.identificacion;
     request.files.add(await http.MultipartFile.fromPath("imagen", path));
     var streamedResponse = await request.send();
@@ -139,7 +139,7 @@ class UsuarioProvider {
   getPatentes() async {
     // Uri.http(authority, unencodedPath)
     final resp = await http.get(
-      Uri.parse('http://funcionarios.ubo.cl/api/funcionario/patentes')
+      Uri.parse('${Constants.API_URL}api/funcionario/patentes')
           .replace(queryParameters: {"identificacion": _prefs.identificacion}),
       headers: {'Content-Type': 'application/json;charset=UTF-8'},
     );
@@ -152,7 +152,7 @@ class UsuarioProvider {
   setPatentes(patente1, patente2) async {
     // Uri.http(authority, unencodedPath)
     final resp = await http.get(
-      Uri.parse('http://funcionarios.ubo.cl/api/funcionario/patentes/insert')
+      Uri.parse('${Constants.API_URL}api/funcionario/patentes/insert')
           .replace(queryParameters: {
         "identificacion": _prefs.identificacion,
         "patente1": patente1,
@@ -172,7 +172,7 @@ class UsuarioProvider {
   chagenPassword(clave_actual, clave_nueva, clave_nueva_conf) async {
     // Uri.http(authority, unencodedPath)
     final resp = await http.post(
-      Uri.parse('http://funcionarios.ubo.cl/api/cambiar_contrasena'),
+      Uri.parse('${Constants.API_URL}api/cambiar_contrasena'),
       body: json.encode({
         "identificacion": _prefs.identificacion,
         "clave_actual": clave_actual,

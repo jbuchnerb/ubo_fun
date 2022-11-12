@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ubo_fun/src/noticias_usuario/noticias_usuario.dart';
 import 'package:ubo_fun/src/pages/credential2.page.dart';
+import 'package:ubo_fun/src/pages/credential_acceso.page.dart';
 import 'package:ubo_fun/src/pages/home.page.dart';
 import 'package:ubo_fun/src/pages/news.page.dart';
 import 'package:ubo_fun/src/pages/password.page.dart';
@@ -62,6 +63,8 @@ class MyApp extends StatelessWidget {
       HomePage.routeName: (BuildContext context) => HomePage(),
       NewsPage.routeName: (BuildContext context) => NewsPage(),
       Credential2Page.routeName: (BuildContext context) => Credential2Page(),
+      CredentialAccesoPage.routeName: (BuildContext context) =>
+          CredentialAccesoPage(),
       QrScanPage.routeName: (BuildContext context) => QrScanPage(),
       ProfileImage.routeName: (BuildContext context) => ProfileImage(),
       PatentesPage.routeName: (BuildContext context) => PatentesPage(),

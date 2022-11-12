@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:ubo_fun/src/pages/credential2.page.dart';
+import 'package:ubo_fun/src/pages/credential_acceso.page.dart';
 import 'package:ubo_fun/src/pages/home.page.dart';
 import 'package:ubo_fun/src/pages/qrscan.page.dart';
 import 'package:ubo_fun/src/pages/news.page.dart';
@@ -30,14 +31,14 @@ class _MenuWidgetState extends State<MenuWidget> {
     Size size = MediaQuery.of(context).size;
     ImageProvider imgperfil;
     //print("Imagen: ${_prefs.imagen}");
-   /* if (_prefs.imagen != "") {
+    /* if (_prefs.imagen != "") {
       //print('1');
       Uint8List _bytes = base64.decode('${_prefs.imagen}');
       imgperfil = Image.memory(_bytes).image;
     } else {*/
-      //print('2');
-      imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
-   // }
+    //print('2');
+    imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
+    // }
 
     return Drawer(
       // Add a ListView to the drawer. This ensures the user can scroll
@@ -120,13 +121,22 @@ class _MenuWidgetState extends State<MenuWidget> {
             },
           ),
           ListTile(
-            title: Text('Escanear QR'),
+            title: Text('Credencial Acceso'),
             onTap: () {
               // Update the state of the app
               // ...
               // Then close the drawer
               Navigator.pushReplacementNamed(
-                  context, QrScanPage.routeName);
+                  context, CredentialAccesoPage.routeName);
+            },
+          ),
+          ListTile(
+            title: Text('Escanear QR'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pushReplacementNamed(context, QrScanPage.routeName);
             },
           ),
           /*ListTile(

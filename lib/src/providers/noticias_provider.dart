@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ubo_fun/assets/Constants.dart';
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:ubo_fun/src/noticias_usuario/noticias_usuario.dart';
 import 'package:http/http.dart' as http;
@@ -17,8 +18,7 @@ class NoticiasProvider {
       'identificacion': _prefs.identificacion,
     };
 
-    final resp = await http.post(
-        Uri.parse('http://funcionarios.ubo.cl/api/noticia'),
+    final resp = await http.post(Uri.parse('${Constants.API_URL}api/noticia'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     print(resp.body);
@@ -58,7 +58,7 @@ class NoticiasProvider {
     };
 
     final resp = await http.post(
-        Uri.parse('http://funcionarios.ubo.cl/api/noticias/reaccion'),
+        Uri.parse('${Constants.API_URL}api/noticias/reaccion'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));
@@ -86,7 +86,7 @@ class NoticiasProvider {
     };
 
     final resp = await http.post(
-        Uri.parse('http://funcionarios.ubo.cl/api/noticia/read'),
+        Uri.parse('${Constants.API_URL}api/noticia/read'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ubo_fun/assets/Constants.dart';
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 
 class QrscanAlumnosProvider {
@@ -14,7 +15,7 @@ class QrscanAlumnosProvider {
     };
 
     final resp = await http.post(
-        Uri.parse('http://funcionarios.ubo.cl/api/getDatosAlumno'),
+        Uri.parse('${Constants.API_URL}api/getDatosAlumno'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));
@@ -28,13 +29,11 @@ class QrscanAlumnosProvider {
     }
 
     if (decodedResp.containsKey('status')) {
-
       if (decodedResp['status'] == 404) {
         return {'ok': false, 'mensaje': decodedResp['mensaje']};
       }
 
       if (decodedResp['status'] == 200) {
-
         return decodedResp; //{'ok': true, 'mensaje': decodedResp['mensaje']};
       }
       //_prefs.token = decodedResp['idToken'];

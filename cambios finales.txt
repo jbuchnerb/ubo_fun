@@ -1,0 +1,29 @@
+$privatekey = ubo$$;
+$privateHash = hash(privatekey,'MD5');
+{
+token: hash($idfuncionario+$hora+$privateHash,'MD5'),
+hora: "22:18",
+idfuncionario: 500,
+}
+
+
+QR = hash($idfuncionario+$hora+$privateHash,'MD5');
+
+
+21:18 = +-15min;
+
+
+Antonio Flutter
+Credencial biblioteca -> rut con $
+Credencial acceso -> Credencial para funcionarios con hash de privatekey, hora, idusuario
+Escaner QR para todo tipo de acceso -> envía identificacion, idusuario, hora y hash
+
+
+Johann Laravel
+generar api control de acceso con tipo
+	->alumno/biblioteca
+	->funcionario
+	->evento
+Generar mantenedor de eventos
+Generar URL con qr evento
+Generar mail envío credencial

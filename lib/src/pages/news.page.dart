@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ubo_fun/assets/Constants.dart';
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:ubo_fun/src/noticias_usuario/noticias_usuario.dart';
 import 'package:ubo_fun/src/providers/noticias_provider.dart';
@@ -20,7 +21,7 @@ class _NewsPageState extends State<NewsPage> {
   List? _listaNoticias;
 
   final _prefs = new PreferenciasUsuario();
- 
+
   final _news = new NoticiasUsuario();
 
   final _newsprovider = new NoticiasProvider();
@@ -30,17 +31,17 @@ class _NewsPageState extends State<NewsPage> {
   @override
   void initState() {
     //print(_news.noticias);
-     _listaNoticias = json.decode(_news.noticias) as List?;
+    _listaNoticias = json.decode(_news.noticias) as List?;
     // print(_listaNoticias);
     updateNews();
     super.initState();
   }
 
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-        backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
+          backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
           actions: [
             Container(
               decoration: BoxDecoration(
@@ -53,12 +54,13 @@ class _NewsPageState extends State<NewsPage> {
           // iconTheme: new IconThemeData(color: Colors.black),
         ),
         body: Container(
-      margin: EdgeInsets.all(10),
-      child:
-          RefreshIndicator(onRefresh: updateNews, child: generateNews(context)),));
+          margin: EdgeInsets.all(10),
+          child: RefreshIndicator(
+              onRefresh: updateNews, child: generateNews(context)),
+        ));
   }
 
- /* Widget build(BuildContext context) {
+  /* Widget build(BuildContext context) {
     //_prefs.ultimaPagina = NewsPage.routeName;
     return LayoutWidget(
         child: Container(
@@ -67,15 +69,12 @@ class _NewsPageState extends State<NewsPage> {
           RefreshIndicator(onRefresh: updateNews, child: generateNews(context)),
     ));
   }*/
-  
 
   ListView generateNews(context) {
-     // print(_listaNoticias);
+    // print(_listaNoticias);
     return ListView.builder(
-      
         itemCount: _listaNoticias!.length,
         itemBuilder: (BuildContext context, int index) {
-
           return generateCard(context,
               idnoticia: _listaNoticias![index]['id'],
               title: _listaNoticias![index]['titulo'],
@@ -85,14 +84,22 @@ class _NewsPageState extends State<NewsPage> {
               reacciones: _listaNoticias![index]['likes'],
               read: _listaNoticias![index]['read'],
               enlace: _listaNoticias![index]['link'],
-              index: index
-              ); 
-                      });
-  } 
+              index: index);
+        });
+  }
 
-  generateCard(context, { required idnoticia, required title, required text, required image,required reaccion,required reacciones,required read,required enlace,required index}) {
-    bool breaccion=false;
-    bool enabled=true;
+  generateCard(context,
+      {required idnoticia,
+      required title,
+      required text,
+      required image,
+      required reaccion,
+      required reacciones,
+      required read,
+      required enlace,
+      required index}) {
+    bool breaccion = false;
+    bool enabled = true;
     /*Image imagenews;
     if (image == null) {
       //getImagenNews(idnoticia);
@@ -103,8 +110,8 @@ class _NewsPageState extends State<NewsPage> {
       image = Image.asset("assets/img/logo_ubo.png").image;
     }*/
 
-    if (reaccion==1) {
-       breaccion=true;
+    if (reaccion == 1) {
+      breaccion = true;
     }
 
     //Size size = MediaQuery.of(context).size;
@@ -120,53 +127,46 @@ class _NewsPageState extends State<NewsPage> {
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10), topRight: Radius.circular(10)),
               child: FadeInImage(
-                  placeholder: Image.asset("assets/img/logo_ubo.png").image,
-                  image: Image.network('http://funcionarios.ubo.cl/api/noticia/$idnoticia/imagen').image,
-                  )),
+                placeholder: Image.asset("assets/img/logo_ubo.png").image,
+                image: Image.network(
+                        '${Constants.API_URL}api/noticia/$idnoticia/imagen')
+                    .image,
+              )),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.headline5,
-              textAlign: TextAlign.center
-            ),
+            child: Text(title,
+                style: Theme.of(context).textTheme.headline5,
+                textAlign: TextAlign.center),
           ),
           ExpandChild(
-
-          indicatorBuilder: (context, onTap, expanded) { 
-            
-
-           return AbsorbPointer(
-                  absorbing: !enabled,
-                  child: InkWell(
-                    onTap: (){
-                      onTap();
-                      if (!expanded){
-                          onExpandTap(idnoticia);
-                          //print(idnoticia);
-                          }
-                      setState(() {
-                        enabled = false;
-                      });
-                    },
-                    child: Icon(
-                        expanded? Icons.expand_less_outlined
-                        : Icons.expand_more_outlined
-                      ),
-                  ),
-                );
-          },
-
-              child: Column(
-                //onExpandTap(idnoticia),
-                children: <Widget>[
-                  Text(text,
-                  textAlign: TextAlign.justify),
-              getEnlace(enlace),
-
-                ],
-              ),
+            indicatorBuilder: (context, onTap, expanded) {
+              return AbsorbPointer(
+                absorbing: !enabled,
+                child: InkWell(
+                  onTap: () {
+                    onTap();
+                    if (!expanded) {
+                      onExpandTap(idnoticia);
+                      //print(idnoticia);
+                    }
+                    setState(() {
+                      enabled = false;
+                    });
+                  },
+                  child: Icon(expanded
+                      ? Icons.expand_less_outlined
+                      : Icons.expand_more_outlined),
+                ),
+              );
+            },
+            child: Column(
+              //onExpandTap(idnoticia),
+              children: <Widget>[
+                Text(text, textAlign: TextAlign.justify),
+                getEnlace(enlace),
+              ],
             ),
+          ),
         ],
       ),
     );
@@ -181,41 +181,40 @@ class _NewsPageState extends State<NewsPage> {
     return generateNews(context);
   }
 
-  Future<bool> onLikeButtonTapped(breaccion,idnoticia,index) async{
+  Future<bool> onLikeButtonTapped(breaccion, idnoticia, index) async {
     /*var result =*/ await _newsprovider.getReaccionar(idnoticia);
-    if (breaccion==true){
-      _listaNoticias![index]['liked']=0;
-      _listaNoticias![index]['likes']-=1;
+    if (breaccion == true) {
+      _listaNoticias![index]['liked'] = 0;
+      _listaNoticias![index]['likes'] -= 1;
     } else {
-      _listaNoticias![index]['liked']=1;
-      _listaNoticias![index]['likes']+=1;
-    }    
+      _listaNoticias![index]['liked'] = 1;
+      _listaNoticias![index]['likes'] += 1;
+    }
     setState(() {});
     return !breaccion;
   }
 
-   Future<void> onExpandTap(idnoticia) async{
+  Future<void> onExpandTap(idnoticia) async {
     await _newsprovider.getLectura(idnoticia);
-
   }
 
   getEnlace(String? enlace) {
-    if (enlace==null){
+    if (enlace == null) {
       return Text('');
-    }
-    else {
+    } else {
       return ListTile(
-                       title: Text('$enlace'),
-                       onTap: () async {
-                           if (await canLaunch(enlace)) {
-                              await launch(enlace, forceSafariVC: false,);
-                            } else {
-                              throw 'No fue posible abrir el enlace $enlace';
-                            }
-                              },
-                            );
+        title: Text('$enlace'),
+        onTap: () async {
+          if (await canLaunch(enlace)) {
+            await launch(
+              enlace,
+              forceSafariVC: false,
+            );
+          } else {
+            throw 'No fue posible abrir el enlace $enlace';
+          }
+        },
+      );
     }
-              
   }
 }
-

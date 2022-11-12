@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:ubo_fun/src/pages/credential_acceso.page.dart';
 import 'package:ubo_fun/src/pages/login.page.dart';
 import 'package:ubo_fun/src/pages/news.page.dart';
 import 'package:ubo_fun/src/pages/password.page.dart';
@@ -96,8 +97,22 @@ class _HomePageState extends State<HomePage> {
               ),
               Container(
                 padding: const EdgeInsets.all(3),
-                child: _crearBotonRedondeado(bluecolor, Icons.badge_outlined,
-                    'Credencial', Credential2Page.routeName, context),
+                child: _crearBotonRedondeado(
+                    bluecolor,
+                    Icons.badge_outlined,
+                    'Credencial Biblioteca',
+                    Credential2Page.routeName,
+                    context),
+                color: Colors.transparent,
+              ),
+              Container(
+                padding: const EdgeInsets.all(3),
+                child: _crearBotonRedondeado(
+                    bluecolor,
+                    Icons.badge_outlined,
+                    'Credencial Acceso',
+                    CredentialAccesoPage.routeName,
+                    context),
                 color: Colors.transparent,
               ),
               Container(

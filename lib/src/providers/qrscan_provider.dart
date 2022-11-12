@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:ubo_fun/assets/Constants.dart';
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 
 class QrscanProvider {
@@ -14,7 +15,7 @@ class QrscanProvider {
     };
 
     final resp = await http.post(
-        Uri.parse('http://funcionarios.ubo.cl/api/getDatosFuncionario'),
+        Uri.parse("${Constants.API_URL}api/getDatosFuncionario"),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
     //print(json.encode(authData));
