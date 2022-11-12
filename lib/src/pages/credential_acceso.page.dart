@@ -144,17 +144,12 @@ class CredentialAccesoPage extends StatelessWidget {
   generateQr(Size size) {
     //identificacion, idusuario, hora y hash
     final dateNow = DateTime.now();
-    final dateFormat = DateFormat('yyyy-MM-dd hh:mm:ss.sss');
     final unixDate = dateNow.millisecondsSinceEpoch;
-    final hash = md5
-        .convert(utf8.encode(
-            "${_prefs.identificacion}${_prefs.idusuario}${unixDate}${Constants.PRIVATE_KEY}"))
-        .toString();
     final json = {
       "identificacion": _prefs.identificacion,
       "idusuario": _prefs.idusuario,
       "dt": unixDate,
-      "hash": hash,
+      "hash": Functions.makeHash(unixDate),
     };
 
     final crypted = Functions.encryptJson(json);

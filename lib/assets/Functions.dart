@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:ubo_fun/assets/Constants.dart';
+import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 
 class Functions {
   static encrypt(String value) {
@@ -25,5 +27,13 @@ class Functions {
 
   static decryptJson(String cryptedJson) {
     return jsonDecode(Functions.decrypt(cryptedJson));
+  }
+
+  static String makeHash(int unixDate, {identificacion, idusuario}) {
+    PreferenciasUsuario _prefs = new PreferenciasUsuario();
+    return md5
+        .convert(utf8.encode(
+            "${identificacion ?? _prefs.identificacion}${idusuario ?? _prefs.idusuario}$unixDate${Constants.PRIVATE_KEY}"))
+        .toString();
   }
 }
