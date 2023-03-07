@@ -16,7 +16,7 @@ class QrscanProvider {
     final resp = await http.post(Uri.parse("${Constants.API_URL}api/scanner"),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
-
+    log(resp.body);
     Map<String, dynamic> decodedResp;
     try {
       decodedResp = json.decode(resp.body);

@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                 TableRow(
                   children: <Widget>[generateDatosUsuario(context)],
                 ),
-                if (_prefs.controlacceso == 1)
+                if (_prefs.controlacceso == "1")
                   TableRow(
                     children: <Widget>[generarListaSedes()],
                   ),
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                     'Cambiar Contraseña', PasswordPage.routeName, context),
                 color: Colors.transparent,
               ),
-              if (_prefs.controlacceso == 1)
+              if (_prefs.controlacceso == "1")
                 Container(
                   padding: const EdgeInsets.all(3),
                   child: _crearBotonRedondeado(bluecolor, Icons.qr_code_scanner,

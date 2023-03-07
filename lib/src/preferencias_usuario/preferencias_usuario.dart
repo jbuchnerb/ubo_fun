@@ -152,12 +152,12 @@ class PreferenciasUsuario {
     _prefs.setString('sessionid', value);
   }
 
-  int get controlacceso {
-    return _prefs.getInt('controlacceso') ?? 0;
+  String get controlacceso {
+    return _prefs.getString('controlacceso') ?? '0';
   }
 
-  set controlacceso(int value) {
-    _prefs.setInt('controlacceso', value);
+  set controlacceso(String value) {
+    _prefs.setString('controlacceso', value);
   }
 
   int get idusuario {

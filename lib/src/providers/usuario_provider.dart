@@ -70,7 +70,7 @@ class UsuarioProvider {
         //_prefs.grado = decodedResp['body']['grado'];
         //_prefs.password = decodedResp['body']['password'];
         _prefs.funcionario_activo = decodedResp['funcionario_activo'] ?? 0;
-        _prefs.controlacceso = decodedResp['control_acceso'] ?? '';
+        _prefs.controlacceso = decodedResp['control_acceso'] ?? 0;
         _prefs.cargo = decodedResp['cargoFuncionario'] ?? '';
         _prefs.tipofuncionario = decodedResp['tipoFuncionario'] ?? '';
         _prefs.idusuario = decodedResp['idusuario'] ?? '';

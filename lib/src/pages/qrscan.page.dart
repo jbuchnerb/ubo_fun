@@ -46,6 +46,7 @@ class _QrScanPageState extends State<QrScanPage> {
   String sestadoalumno = '';
   String? fechamatricula = '';
   String? imagenCredencial = '';
+  String? ingresos = '';
   Color color = Colors.white;
   //Uint8List _bytes;
 
@@ -111,6 +112,7 @@ class _QrScanPageState extends State<QrScanPage> {
       imagenCredencial = '';
       sestadoalumno = '';
       fechamatricula = '';
+      ingresos = '';
       //_scanBarcode = '165575288\$';
       //barcodeScanRes='asdasd';
 
@@ -202,6 +204,7 @@ class _QrScanPageState extends State<QrScanPage> {
     Functions.popup(context, "Buscando...");
     Map<String, dynamic> decodedResp =
         await _qrscanprovider.getDatosFuncionario(Functions.encryptJson(json));
+    print(decodedResp);
     Navigator.pop(context);
 
     if (decodedResp['ok'] == false) {
@@ -227,6 +230,7 @@ class _QrScanPageState extends State<QrScanPage> {
   }
 
   generateWorkerCredential(decodedResp) {
+    log(decodedResp.toString());
     identificacion = decodedResp['identificacion'];
     nombre = 'Nombre:' + decodedResp['nombre'];
     apellidos =
@@ -237,6 +241,8 @@ class _QrScanPageState extends State<QrScanPage> {
     cargofuncionario = 'Cargo: ' + decodedResp['cargoFuncionario'];
     imagenstring = decodedResp['imagen'] ?? '';
     correo = 'Correo: ' + (decodedResp['correo'] ?? '');
+    if (decodedResp['tipoFuncionario'] == 'Evento')
+      ingresos = 'Ingresos: ' + (decodedResp['ingresos'].toString());
     // patente1 = 'Patente 1: ' + (decodedResp['patente1'] ?? 'Sin patente');
     // patente2 = 'Patente 2: ' + (decodedResp['patente2'] ?? 'Sin patente');
 
@@ -266,6 +272,7 @@ class _QrScanPageState extends State<QrScanPage> {
     sestadoalumno = 'Estado Alumno: ' + (decodedResp['estado'] ?? '');
     imagenstring = decodedResp['imagen'];
     fechamatricula = decodedResp['fecha_matricula'] ?? '';
+    ingresos = decodedResp['ingresos'] ?? '';
     //correo = 'Correo: '+decodedResp['correo'];
 
     if (imagenstring != null) {
@@ -330,6 +337,7 @@ class _QrScanPageState extends State<QrScanPage> {
       sestadoalumno = 'Estado Alumno: ' + decodedResp['estado'];
       imagenstring = decodedResp['imagen'];
       fechamatricula = decodedResp['fecha_matricula'];
+      ingresos = decodedResp['ingresos'];
       //correo = 'Correo: '+decodedResp['correo'];
 
       if (imagenstring != null) {
@@ -740,6 +748,21 @@ class _QrScanPageState extends State<QrScanPage> {
               textAlign: TextAlign.center,
             ),
             SizedBox(
+              height: size.height * 0.15,
+            ),
+            Text(
+              '$ingresos',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  // .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(
+                    color: const Color.fromRGBO(8, 54, 130, 1.0),
+                    backgroundColor: Colors.yellow,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
               height: size.height * 0.01,
             ),
             Text(
@@ -822,7 +845,10 @@ class _QrScanPageState extends State<QrScanPage> {
             ),
             Text(
               '$nombre',
-              style: Theme.of(context).textTheme.headline6!.apply(color: color),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: color, backgroundColor: Colors.black45),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
@@ -842,7 +868,10 @@ class _QrScanPageState extends State<QrScanPage> {
           ),*/
             Text(
               '$scarrera',
-              style: Theme.of(context).textTheme.headline6!.apply(color: color),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: color, backgroundColor: Colors.black45),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
@@ -851,7 +880,10 @@ class _QrScanPageState extends State<QrScanPage> {
             ),
             Text(
               '$sestadoalumno',
-              style: Theme.of(context).textTheme.headline6!.apply(color: color),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: color, backgroundColor: Colors.black45),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
@@ -860,7 +892,10 @@ class _QrScanPageState extends State<QrScanPage> {
             ),
             Text(
               '$fechamatricula',
-              style: Theme.of(context).textTheme.headline6!.apply(color: color),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .apply(color: color, backgroundColor: Colors.black45),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
