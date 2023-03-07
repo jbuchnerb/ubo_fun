@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:html';
-
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
@@ -150,6 +147,7 @@ class CredentialAccesoPage extends StatelessWidget {
       "idusuario": _prefs.idusuario,
       "dt": unixDate,
       "hash": Functions.makeHash(unixDate),
+      "tipocredencial": 'acceso',
     };
 
     final crypted = Functions.encryptJson(json);

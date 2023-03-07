@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:ubo_fun/assets/Functions.dart';
 import 'package:ubo_fun/src/pages/credential_acceso.page.dart';
 import 'package:ubo_fun/src/pages/login.page.dart';
 import 'package:ubo_fun/src/pages/news.page.dart';
@@ -22,10 +25,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _prefs = new PreferenciasUsuario();
+  final List<String> items = [
+    'Casa Central',
+    'Rondizzoni I',
+    'Rondizzoni II',
+  ];
+  String? selectedValue;
 
   Widget build(BuildContext context) {
     //Size size = MediaQuery.of(context).size;
     //print(_prefs.idusuario);
+
     ImageProvider imgperfil;
     _prefs.ultimaPagina = HomePage.routeName;
     imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
@@ -57,6 +67,10 @@ class _HomePageState extends State<HomePage> {
                 TableRow(
                   children: <Widget>[generateDatosUsuario(context)],
                 ),
+                if (_prefs.controlacceso == 1)
+                  TableRow(
+                    children: <Widget>[generarListaSedes()],
+                  ),
                 TableRow(
                   children: <Widget>[generateBotones(context)],
                 ),
@@ -99,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(3),
                 child: _crearBotonRedondeado(
                     bluecolor,
-                    Icons.badge_outlined,
+                    Icons.local_library_outlined,
                     'Credencial Biblioteca',
                     Credential2Page.routeName,
                     context),
@@ -115,16 +129,16 @@ class _HomePageState extends State<HomePage> {
                     context),
                 color: Colors.transparent,
               ),
-              Container(
-                padding: const EdgeInsets.all(3),
-                child: _crearBotonRedondeado(
-                    bluecolor,
-                    Icons.directions_car_outlined,
-                    'Patentes',
-                    PatentesPage.routeName,
-                    context),
-                color: Colors.transparent,
-              ),
+              // Container(
+              //   padding: const EdgeInsets.all(3),
+              //   child: _crearBotonRedondeado(
+              //       bluecolor,
+              //       Icons.directions_car_outlined,
+              //       'Patentes',
+              //       PatentesPage.routeName,
+              //       context),
+              //   color: Colors.transparent,
+              // ),
               Container(
                 padding: const EdgeInsets.all(3),
                 child: _crearBotonRedondeado(bluecolor, Icons.security,
@@ -194,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Container(
                     width: size.width * 0.48,
-                    height: size.height * 0.13,
+                    height: size.height * 0.12,
                     decoration: new BoxDecoration(
                         //shape: BoxShape.circle,
                         image: new DecorationImage(
@@ -231,7 +245,7 @@ class _HomePageState extends State<HomePage> {
                         _prefs.nombre,
                         textAlign: TextAlign.start,
                         style: TextStyle(
-                          fontSize: 22.0,
+                          fontSize: 15.0,
                           color: Colors.white70,
                           fontWeight: FontWeight.w800,
                         ),
@@ -242,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                         _prefs.appaterno + ' ' + _prefs.apmaterno,
                         textAlign: TextAlign.start,
                         style: TextStyle(
-                          fontSize: 22.0,
+                          fontSize: 15.0,
                           color: Colors.white70,
                           fontWeight: FontWeight.w800,
                         ),
@@ -272,7 +286,16 @@ class _HomePageState extends State<HomePage> {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
-        if (routeName != '') Navigator.pushNamed(context, routeName);
+        if (routeName == QrScanPage.routeName && selectedValue == null) {
+          Functions.popup(context, "Seleccione una sede");
+        } else if (routeName == QrScanPage.routeName) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => QrScanPage(sede: selectedValue)));
+        } else {
+          if (routeName != '') Navigator.pushNamed(context, routeName);
+        }
       },
       child: ClipRect(
         child: BackdropFilter(
@@ -304,6 +327,51 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  generarListaSedes() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton2(
+        buttonDecoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: Colors.black26,
+          ),
+          color: Colors.white60,
+        ),
+        hint: Align(
+          alignment: AlignmentDirectional.center,
+          child: Text(
+            'Select Item',
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).hintColor,
+            ),
+          ),
+        ),
+        items: items
+            .map((item) => DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: const TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                ))
+            .toList(),
+        value: selectedValue,
+        onChanged: (value) {
+          setState(() {
+            selectedValue = value as String;
+            log(selectedValue.toString());
+          });
+        },
+        buttonHeight: 40,
+        buttonWidth: 100,
+        itemHeight: 40,
       ),
     );
   }

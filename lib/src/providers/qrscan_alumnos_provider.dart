@@ -10,7 +10,8 @@ class QrscanAlumnosProvider {
     final _prefs = new PreferenciasUsuario();
     final authData = {
       'rut': identificacion,
-      'idusuario': _prefs.idusuario,
+      // 'idusuario': _prefs.idusuario,
+      'idusuario': '1',
       'token': _apiToken,
     };
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:ubo_fun/assets/Constants.dart';
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:ubo_fun/src/noticias_usuario/noticias_usuario.dart';
@@ -13,7 +14,6 @@ class NoticiasProvider {
   final _prefs = new PreferenciasUsuario();
 
   Future<Map<String, dynamic>> getNoticias() async {
-    print(_prefs.identificacion);
     final authData = {
       'identificacion': _prefs.identificacion,
     };
@@ -21,9 +21,6 @@ class NoticiasProvider {
     final resp = await http.post(Uri.parse('${Constants.API_URL}api/noticia'),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
-    print(resp.body);
-    print(authData);
-    print(resp);
     if (resp.statusCode != 200) {
       return {'ok': false, 'mensaje': "error al procesar la solicitud"};
     }
@@ -91,8 +88,6 @@ class NoticiasProvider {
         body: json.encode(authData));
     //print(json.encode(authData));
     Map<String, dynamic> decodedResp = json.decode(resp.body);
-
-    //print(decodedResp);
 
     if (decodedResp.containsKey('status')) {
       if (decodedResp['status'] == 404) {

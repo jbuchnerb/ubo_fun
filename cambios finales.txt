@@ -14,8 +14,8 @@ QR = hash($idfuncionario+$hora+$privateHash,'MD5');
 
 
 Antonio Flutter
-Credencial biblioteca -> rut con $
-Credencial acceso -> Credencial para funcionarios con hash de privatekey, hora, idusuario
+OK	-	Credencial biblioteca -> rut con $
+OK	-	Credencial acceso -> Credencial para funcionarios con hash de privatekey, hora, idusuario
 Escaner QR para todo tipo de acceso -> envía identificacion, idusuario, hora y hash
 
 

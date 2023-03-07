@@ -214,12 +214,12 @@ class _PasswordPageState extends State<PasswordPage> {
     // print("grabando patentes");
 
     final grabar = await UsuarioProvider()
-        .chagenPassword(_claveActual.text, _nuevaClave.text, _nuevaClave2.text);
+        .chagePassword(_claveActual.text, _nuevaClave.text, _nuevaClave2.text);
     Navigator.of(context).pop();
-    if (!grabar) {
+    if (grabar['status'] != 200) {
       dialog = AlertDialog(
         title: Text("Error"),
-        content: Text("Ha ocurrido un error, favor vuelva a intentarlo."),
+        content: Text(grabar["message"]),
       );
       showDialog(
         context: context,
@@ -227,9 +227,10 @@ class _PasswordPageState extends State<PasswordPage> {
           return dialog;
         },
       );
+      return false;
     }
     dialog = AlertDialog(
-      title: Text("Operacion realizada exitosamente"),
+      title: Text(grabar["message"]),
       // content: Text(""),
     );
     showDialog(

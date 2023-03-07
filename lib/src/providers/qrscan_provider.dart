@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:ubo_fun/assets/Constants.dart';
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
@@ -10,20 +11,19 @@ class QrscanProvider {
     final _prefs = new PreferenciasUsuario();
     final authData = {
       //'token': _apiToken,
-      'identificacion': identificacion,
-      'idusuario': _prefs.idusuario,
+      'data': identificacion
     };
-
-    final resp = await http.post(
-        Uri.parse("${Constants.API_URL}api/getDatosFuncionario"),
+    final resp = await http.post(Uri.parse("${Constants.API_URL}api/scanner"),
         headers: {'Content-Type': 'application/json;charset=UTF-8'},
         body: json.encode(authData));
-    //print(json.encode(authData));
 
-    Map<String, dynamic> decodedResp = json.decode(resp.body);
-
-    //print(decodedResp);
-
+    Map<String, dynamic> decodedResp;
+    try {
+      decodedResp = json.decode(resp.body);
+    } catch (e) {
+      return {'ok': false, 'mensaje': "Error en la lectura de la credencial"};
+    }
+    log(decodedResp.toString());
     if (decodedResp.containsKey('status')) {
       if (decodedResp['status'] == 404) {
         return {'ok': false, 'mensaje': decodedResp['mensaje']};

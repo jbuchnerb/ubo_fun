@@ -1,10 +1,15 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:ubo_fun/assets/Constants.dart';
+import 'package:ubo_fun/assets/Functions.dart';
+import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:ubo_fun/src/providers/qrscan_provider.dart';
 import 'package:ubo_fun/src/providers/qrscan_alumnos_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,13 +17,14 @@ import 'package:url_launcher/url_launcher.dart';
 
 class QrScanPage extends StatefulWidget {
   static final String routeName = 'qrscan';
-  const QrScanPage({Key? key}) : super(key: key);
-
+  const QrScanPage({Key? key, String? this.sede}) : super(key: key);
+  final String? sede;
   @override
   _QrScanPageState createState() => _QrScanPageState();
 }
 
 class _QrScanPageState extends State<QrScanPage> {
+  final _prefs = PreferenciasUsuario();
   String _scanBarcode = 'Unknown';
 
   final _qrscanprovider = QrscanProvider();
@@ -40,6 +46,7 @@ class _QrScanPageState extends State<QrScanPage> {
   String sestadoalumno = '';
   String? fechamatricula = '';
   String? imagenCredencial = '';
+  Color color = Colors.white;
   //Uint8List _bytes;
 
   @override
@@ -119,78 +126,160 @@ class _QrScanPageState extends State<QrScanPage> {
     });
   }
 
-  Future<bool> getDatosFuncionario(identificacion) async {
-    AlertDialog dialog = AlertDialog(
-      title: Text("Buscando..."),
-    );
+  validateAccessCredential(json) {
+    var identificacion = json['identificacion'] ?? '';
+    final idusuario = json['idusuario'] ?? '';
+    final dt = json['dt'] ?? '';
+    final hash = json['hash'] ?? '';
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return dialog;
-      },
-    );
-    Map<String, dynamic> decodedResp =
-        await _qrscanprovider.getDatosFuncionario(identificacion);
+    final nhash = Functions.makeHash(dt,
+        identificacion: identificacion, idusuario: idusuario);
 
-    if (decodedResp['ok'] == false) {
-      Navigator.of(context).pop();
-      // _formularioblanco(context);
-
-      AlertDialog dialog = AlertDialog(
-        title: Text("Funcionario no encontrado"),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"))
-        ],
-      );
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return dialog;
-        },
-      );
-
+    if (hash != nhash) {
+      Functions.popup(context, 'Credencial invalida');
       return false;
     }
 
-    setState(() {
-      identificacion = decodedResp['identificacion'];
-      nombre = 'Nombre:' + decodedResp['nombre'];
-      apellidos = decodedResp['apellido_paterno'] +
-          ' ' +
-          decodedResp['apellido_materno'];
-      //apellido_materno = decodedResp['apellido_materno'];
-      funcionario_activo = decodedResp['funcionario_activo'];
-      tipofuncionario = 'Tipo funcionario: ' + decodedResp['tipoFuncionario'];
-      cargofuncionario = 'Cargo: ' + decodedResp['cargoFuncionario'];
-      imagenstring = decodedResp['imagen'] ?? '';
-      correo = 'Correo: ' + (decodedResp['correo'] ?? '');
-      patente1 = 'Patente 1: ' + (decodedResp['patente1'] ?? 'Sin patente');
-      patente2 = 'Patente 2: ' + (decodedResp['patente2'] ?? 'Sin patente');
+    final date = DateTime.fromMillisecondsSinceEpoch(dt);
+    final difference = DateTime.now().difference(date).inMinutes;
+    if (difference >= Constants.CREDENTIAL_DURATION ||
+        difference <= -Constants.CREDENTIAL_DURATION) {
+      Functions.popup(context, 'Credencial expirada', ok: true);
+      return false;
+    }
 
-      if (imagenstring != "") {
-        Uint8List _bytes = base64.decode(imagenstring!);
-        imagen = Image.memory(
-          _bytes,
-        ).image;
-      } else {
-        imagen = Image.asset("assets/img/perfil_imagen.png").image;
-      }
-      //imagen = decodedResp['imagen'];
-
-      //_tipoFormulario(context,tipoScanner);
-    });
-    Navigator.of(context).pop();
     return true;
   }
 
+  generateAccessJson(json) {
+    final dateNow = DateTime.now();
+    final unixDate = dateNow.millisecondsSinceEpoch;
+
+    json['idusuario'] = _prefs.idusuario;
+    json['dt'] = unixDate;
+    json['hash'] = Functions.makeHash(unixDate,
+        identificacion: json['identificacion'], idusuario: _prefs.idusuario);
+    json['sede'] = widget.sede;
+    return json;
+  }
+
+  generateLibraryJson(identificacion) {
+    identificacion = identificacion.replaceAll('\$', '');
+    Map<String, dynamic> json = {};
+
+    final dateNow = DateTime.now();
+    final unixDate = dateNow.millisecondsSinceEpoch;
+
+    json['identificacion'] = identificacion;
+    json['idusuario'] = _prefs.idusuario;
+    json['dt'] = unixDate;
+    json['hash'] = Functions.makeHash(unixDate,
+        identificacion: identificacion, idusuario: _prefs.idusuario);
+    json['tipocredencial'] = 'biblioteca';
+    json['sede'] = widget.sede;
+    return json;
+  }
+
+  Future<bool> getDatosFuncionario(cryptedJson) async {
+    Map<String, dynamic> json = Functions.decryptJson(cryptedJson);
+    // log(sede.toString());
+
+    final args = ['identificacion', 'dt', 'hash', "tipocredencial"];
+
+    if (Functions.validateJson(json, args)) {
+      if (!validateAccessCredential(json)) {
+        Functions.popup(context, "Credencial Invalida");
+        return false;
+      }
+      log('access json');
+      json = generateAccessJson(json);
+    } else {
+      // TODO: crear json de credencial biblioteca
+      json = generateLibraryJson(cryptedJson);
+      log('library json');
+    }
+
+    Functions.popup(context, "Buscando...");
+    Map<String, dynamic> decodedResp =
+        await _qrscanprovider.getDatosFuncionario(Functions.encryptJson(json));
+    Navigator.pop(context);
+
+    if (decodedResp['ok'] == false) {
+      Functions.popup(context, decodedResp['mensaje'], ok: true);
+      return false;
+    }
+
+    if (json['tipocredencial'] == 'biblioteca') {
+      generateLibraryCredential(decodedResp);
+    } else {
+      if (json['tipocredencial'] == 'evento') {
+        imagenCredencial = 'assets/img/credencial/crede1-inv.png';
+        color = Colors.black;
+      } else {
+        imagenCredencial = 'assets/img/credencial/crede1.png';
+        color = Colors.white;
+      }
+      generateWorkerCredential(decodedResp);
+    }
+    setState(() {});
+    // Navigator.of(context).pop();
+    return true;
+  }
+
+  generateWorkerCredential(decodedResp) {
+    identificacion = decodedResp['identificacion'];
+    nombre = 'Nombre:' + decodedResp['nombre'];
+    apellidos =
+        decodedResp['apellido_paterno'] + ' ' + decodedResp['apellido_materno'];
+    //apellido_materno = decodedResp['apellido_materno'];
+    funcionario_activo = decodedResp['funcionario_activo'];
+    tipofuncionario = 'Tipo funcionario: ' + decodedResp['tipoFuncionario'];
+    cargofuncionario = 'Cargo: ' + decodedResp['cargoFuncionario'];
+    imagenstring = decodedResp['imagen'] ?? '';
+    correo = 'Correo: ' + (decodedResp['correo'] ?? '');
+    // patente1 = 'Patente 1: ' + (decodedResp['patente1'] ?? 'Sin patente');
+    // patente2 = 'Patente 2: ' + (decodedResp['patente2'] ?? 'Sin patente');
+
+    if (imagenstring != "") {
+      Uint8List _bytes = base64.decode(imagenstring!);
+      imagen = Image.memory(
+        _bytes,
+      ).image;
+    } else {
+      imagen = Image.asset("assets/img/perfil_imagen.png").image;
+    }
+  }
+
+  generateLibraryCredential(decodedResp) {
+    tipoScanner = 'QrScanAlumnos';
+    identificacion = decodedResp['rut'];
+
+    final facultad = decodedResp['cod_facultad'] ?? '';
+    this.imagenCredencial = _imagenCredencial(facultad);
+
+    nombre = 'Nombre:' + decodedResp['nombre'];
+    //apellidos = decodedResp['apellido_paterno']+' '+decodedResp['apellido_materno'];;
+    //apellido_materno = decodedResp['apellido_materno'];
+    //funcionario_activo = decodedResp['funcionario_activo'];
+    scarrera = 'Carrera: ' + decodedResp['nombre_carrera'];
+    //cargofuncionario = 'Cargo: '+decodedResp['cargoFuncionario'];
+    sestadoalumno = 'Estado Alumno: ' + (decodedResp['estado'] ?? '');
+    imagenstring = decodedResp['imagen'];
+    fechamatricula = decodedResp['fecha_matricula'] ?? '';
+    //correo = 'Correo: '+decodedResp['correo'];
+
+    if (imagenstring != null) {
+      Uint8List _bytes = base64.decode(imagenstring!);
+      imagen = Image.memory(
+        _bytes,
+      ).image;
+    } else {
+      imagen = Image.asset("assets/img/perfil_imagen.png").image;
+    }
+  }
+
   Future<bool> getDatosAlumno(identificacion) async {
-    AlertDialog dialog = AlertDialog(
+    AlertDialog dialog = const AlertDialog(
       title: Text("Buscando..."),
     );
 
@@ -207,13 +296,13 @@ class _QrScanPageState extends State<QrScanPage> {
       Navigator.of(context).pop();
 
       AlertDialog dialog = AlertDialog(
-        title: Text("Alumno no encontrado"),
+        title: const Text("Alumno no encontrado"),
         actions: [
           TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"))
+              child: const Text("OK"))
         ],
       );
 
@@ -288,13 +377,13 @@ class _QrScanPageState extends State<QrScanPage> {
     imgperfil = Image.asset("assets/img/perfil_imagen.png").image;
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
+          backgroundColor: const Color.fromRGBO(8, 54, 130, 1.0),
           actions: [
             Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
                   color: Colors.transparent),
-              margin: EdgeInsets.all(5),
+              margin: const EdgeInsets.all(5),
               child: Image.asset("assets/img/logo_ubo_white.png"),
             )
           ],
@@ -384,33 +473,42 @@ class _QrScanPageState extends State<QrScanPage> {
             mainAxisSpacing: 0,
             crossAxisCount: 3,
             children: <Widget>[
+              SizedBox(
+                height: size.height * 0.05,
+              ),
               Container(
                 //padding: const EdgeInsets.all(8),
                 child: _crearBotonRedondeado(
-                    Color.fromRGBO(8, 54, 130, 1.0),
-                    Icons.home_repair_service_sharp,
-                    'Funcionarios',
+                    const Color.fromRGBO(8, 54, 130, 1.0),
+                    Icons.qr_code_scanner,
+                    'Escanear Credencial',
                     'QrScanFuncionarios'),
                 color: Colors.transparent,
               ),
-              Container(
-                //padding: const EdgeInsets.all(8),
-                child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
-                    Icons.cast_for_education_sharp, 'Alumnos', 'QrScanAlumnos'),
-                color: Colors.transparent,
-              ),
-             /* Container(
+              // Container(
+              //   //padding: const EdgeInsets.all(8),
+              //   child: _crearBotonRedondeado(
+              //       const Color.fromRGBO(8, 54, 130, 1.0),
+              //       Icons.cast_for_education_sharp,
+              //       'Alumnos',
+              //       'QrScanAlumnos'),
+              //   color: Colors.transparent,
+              // ),
+              /* Container(
                 ///padding: const EdgeInsets.all(1),
                 child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
                     Icons.sell, 'Encomienda', ''),
                 color: Colors.transparent,
               ),*/
-              Container(
-                //padding: const EdgeInsets.all(1),
-                child: _crearBotonRedondeado(Color.fromRGBO(8, 54, 130, 1.0),
-                    Icons.health_and_safety, 'mevacuno.cl', 'MeVacuno'),
-                color: Colors.transparent,
-              ),
+              // Container(
+              //   //padding: const EdgeInsets.all(1),
+              //   child: _crearBotonRedondeado(
+              //       const Color.fromRGBO(8, 54, 130, 1.0),
+              //       Icons.health_and_safety,
+              //       'mevacuno.cl',
+              //       'MeVacuno'),
+              //   color: Colors.transparent,
+              // ),
             ],
           )),
         ));
@@ -457,7 +555,7 @@ class _QrScanPageState extends State<QrScanPage> {
     return <Widget>[
       Container(
         height: size.height * 0.70,
-        margin: EdgeInsets.all(5),
+        margin: const EdgeInsets.all(5),
         //width: size.width * 1,
         //height: size.height * 1,
         decoration: BoxDecoration(
@@ -491,7 +589,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -502,7 +600,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -513,7 +611,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -524,7 +622,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -535,7 +633,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -551,15 +649,20 @@ class _QrScanPageState extends State<QrScanPage> {
     //if(ScanReturn==true){w
     DecorationImage? decorador;
     if (nombre != '') {
+      if (imagenCredencial == '') {
+        imagenCredencial = 'assets/img/credencial/crede1.png';
+      }
       decorador = DecorationImage(
-          image: Image.asset('assets/img/credencial/crede1.png').image,
+          image: Image.asset(
+                  imagenCredencial ?? 'assets/img/credencial/crede1.png')
+              .image,
           fit: BoxFit.fill);
     }
     // assets/img/credencial/crede1.png
     return <Widget>[
       Container(
         height: size.height * 0.70,
-        margin: EdgeInsets.all(5),
+        margin: const EdgeInsets.all(5),
         //width: size.width * 1,
         //height: size.height * 1,
         decoration: BoxDecoration(
@@ -576,7 +679,7 @@ class _QrScanPageState extends State<QrScanPage> {
             CircleAvatar(
               radius: size.width * 0.2,
 
-              backgroundColor: Colors.white,
+              backgroundColor: color,
 
               backgroundImage: imagen,
               // child: Image.asset('assets/img/profile.png'),
@@ -589,7 +692,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -600,7 +703,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -611,7 +714,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -622,7 +725,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -633,7 +736,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -644,7 +747,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -655,7 +758,7 @@ class _QrScanPageState extends State<QrScanPage> {
               style: Theme.of(context)
                   .textTheme
                   .headline6!
-                  .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
+                  .apply(color: const Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
           ],
@@ -690,11 +793,11 @@ class _QrScanPageState extends State<QrScanPage> {
     return <Widget>[
       Container(
         height: size.height * 0.70,
-        margin: EdgeInsets.all(5),
+        margin: const EdgeInsets.all(5),
         //width: size.width * 1,
         //height: size.height * 1,
         decoration: BoxDecoration(
-          color: Colors.white10,
+          color: color,
           borderRadius: BorderRadius.circular(20),
           image: decorador,
         ),
@@ -708,7 +811,7 @@ class _QrScanPageState extends State<QrScanPage> {
             CircleAvatar(
               radius: size.width * 0.2,
 
-              backgroundColor: Colors.white,
+              backgroundColor: color,
               // backgroundColor: Color.fromRGBO(8, 54, 130, 1.0),
 
               backgroundImage: imagen,
@@ -719,10 +822,7 @@ class _QrScanPageState extends State<QrScanPage> {
             ),
             Text(
               '$nombre',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6!
-                  .apply(color: Colors.white),
+              style: Theme.of(context).textTheme.headline6!.apply(color: color),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
@@ -742,10 +842,7 @@ class _QrScanPageState extends State<QrScanPage> {
           ),*/
             Text(
               '$scarrera',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6!
-                  .apply(color: Colors.white),
+              style: Theme.of(context).textTheme.headline6!.apply(color: color),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
@@ -754,10 +851,7 @@ class _QrScanPageState extends State<QrScanPage> {
             ),
             Text(
               '$sestadoalumno',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6!
-                  .apply(color: Colors.white),
+              style: Theme.of(context).textTheme.headline6!.apply(color: color),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
@@ -766,10 +860,7 @@ class _QrScanPageState extends State<QrScanPage> {
             ),
             Text(
               '$fechamatricula',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6!
-                  .apply(color: Colors.white),
+              style: Theme.of(context).textTheme.headline6!.apply(color: color),
               // .apply(color: Color.fromRGBO(8, 54, 130, 1.0)),
               textAlign: TextAlign.center,
             ),
@@ -817,9 +908,9 @@ class _QrScanPageState extends State<QrScanPage> {
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
           child: Container(
             //height: 10000,
-            margin: EdgeInsets.all(1.0),
+            margin: const EdgeInsets.all(1.0),
             decoration: BoxDecoration(
-                color: Color.fromRGBO(66, 129, 237, 0.2),
+                color: const Color.fromRGBO(66, 129, 237, 0.2),
                 borderRadius: BorderRadius.circular(15.0)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -845,6 +936,7 @@ class _QrScanPageState extends State<QrScanPage> {
   }
 
   _imagenCredencial(facultad) {
+    color = Colors.white;
     String imagen = '';
     switch (facultad) {
       case 'ING':
@@ -883,9 +975,12 @@ class _QrScanPageState extends State<QrScanPage> {
       case 'POST':
         {
           imagen = 'assets/img/credencial/fpostgrados.jpg';
+          color = Colors.black87;
         }
         //statements;
         break;
+      default:
+        imagen = 'assets/img/credencial/crede1-inv.png';
     }
 
     return imagen;

@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:ubo_fun/assets/Constants.dart';
 
 import 'package:ubo_fun/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 
 class UsuarioProvider {
   final String _apiToken = 'XxjbA2i2ksU4byJg00Dvc1XUhqqlBX+Jk48kijKEOK0=';
@@ -15,21 +19,25 @@ class UsuarioProvider {
     //var bytes = utf8.encode(password);
 
     //var digest = sha512.convert(bytes);
-
+    password = md5.convert(utf8.encode(password)).toString();
     final authData = {
       'username': email,
       'password': password,
       //'token': _apiToken,
     };
-
+    log(authData.toString());
     final resp = await http.post(Uri.parse('${Constants.API_URL}api/login'),
-        headers: {'Content-Type': 'application/json;charset=UTF-8'},
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          "Access-Control-Allow-Origin": "*"
+        },
         body: json.encode(authData));
     // print(resp.body);
     // print(resp.statusCode);
     Map<String, dynamic> decodedResp;
     try {
       decodedResp = json.decode(resp.body);
+      log(decodedResp.toString());
     } catch (e) {
       return {
         'ok': false,
@@ -169,7 +177,7 @@ class UsuarioProvider {
     return true;
   }
 
-  chagenPassword(clave_actual, clave_nueva, clave_nueva_conf) async {
+  chagePassword(clave_actual, clave_nueva, clave_nueva_conf) async {
     // Uri.http(authority, unencodedPath)
     final resp = await http.post(
       Uri.parse('${Constants.API_URL}api/cambiar_contrasena'),
@@ -182,11 +190,14 @@ class UsuarioProvider {
       headers: {'Content-Type': 'application/json;charset=UTF-8'},
     );
     print(resp.body);
-    if (resp.statusCode != 200) {
-      return false;
+    if (resp.statusCode != 200 && resp.statusCode != 404) {
+      return {
+        "status": "500",
+        "message": "Ha ocurrido un error, favor vuelva a intentarlo."
+      };
     }
     Map<String, dynamic> decodedResp = json.decode(resp.body);
 
-    return true;
+    return decodedResp;
   }
 }
